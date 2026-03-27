@@ -2,7 +2,7 @@
 
 ## ✅ Working
 
-**Test Results (Updated 12:55 PM IST):**
+**Test Results (Updated 4:03 PM IST):**
 - Two agents can communicate bidirectionally ✅
 - **Different identities** now generated correctly ✅
 - Correct sender addresses displayed ✅
@@ -12,8 +12,8 @@
 - **Skill commands exported** ✅
 
 ```
-Agent A: @bomb-krypton-yellow (port 4001)
-Agent B: @ivory-lima-sierra (port 4002)
+Agent A: @bravo-dark-fort (port 4001)
+Agent B: @suit-india-river (port 4002)
 
 A → B: "Hello from Agent 1!" ✅ (verified signature)
 B → A: "Hi back from Agent 2!" ✅ (verified signature)
@@ -161,13 +161,13 @@ moltmessage @address "Hello!"
 | Permission prompts | ✅ COMPLETE | PermissionManager integrated |
 | Security | ✅ COMPLETE | Ed25519 signatures, rate limiting, SSRF protection |
 | Relay server | ✅ COMPLETE | Deployed via ngrok |
+| Git repo | ✅ COMPLETE | Initialized with commits |
+| GitHub remote | ✅ COMPLETE | https://github.com/AmolDerickSoans/molt-connect |
 | --- | --- | --- |
-| Git repo | ⏳ TODO | `git init && git add . && git commit` |
-| GitHub remote | ⏳ TODO | Create repo and push |
-| npm publish | ⏳ TODO | `npm publish --access public` |
-| ClawHub publish | ⏳ TODO | `clawhub login && clawhub publish` |
+| npm publish | ⏳ USER ACTION | `npm adduser && npm publish --access public` |
+| ClawHub publish | ⏳ USER ACTION | `clawhub login && clawhub publish` |
 | Website fix | ⏳ TODO | Returns 401, needs investigation |
-| Outreach | ⏳ TODO | Templates ready in outreach/ |
+| Outreach | ⏳ READY | Templates in outreach/, GitHub link shareable |
 
 ## Relay Server
 

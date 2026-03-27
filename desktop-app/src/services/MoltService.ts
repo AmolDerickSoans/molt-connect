@@ -71,7 +71,12 @@ export class MoltService extends EventEmitter {
   constructor() {
     super();
     this.settings = (store.get('settings') as Settings) || this.getDefaultSettings();
-    this.dataPath = path.join(process.cwd(), 'molt-data');
+    // Use Application Support directory for installed app
+    const appDataPath = process.env.APPDATA || 
+      (process.platform === 'darwin' 
+        ? path.join(process.env.HOME || '', 'Library', 'Application Support', 'molt-connect-desktop')
+        : path.join(process.env.HOME || '', '.config', 'molt-connect-desktop'));
+    this.dataPath = appDataPath;
     this.ensureDataDir();
     this.loadIdentity();
     this.loadContacts();

@@ -4,9 +4,10 @@
   "description": "Molt Connect Desktop - P2P Agent Messaging",
   "main": "dist/main.js",
   "scripts": {
-    "build": "tsc",
+    "copy-assets": "cp -r src/renderer dist/",
+    "build": "tsc && npm run copy-assets",
     "start": "npm run build && electron .",
-    "dev": "tsc && electron .",
+    "dev": "tsc && npm run copy-assets && electron .",
     "pack": "npm run build && electron-builder --dir",
     "dist": "npm run build && electron-builder",
     "dist:mac": "npm run build && electron-builder --mac"

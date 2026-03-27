@@ -13,21 +13,20 @@ let connectionStatus: ConnectionStatus = 'disconnected';
 
 // Menu bar icons
 function getIcon(status: ConnectionStatus): Electron.NativeImage {
-  const size = 22;
-  const canvas = `
-    <svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="${size/2}" cy="${size/2}" r="${size/2 - 2}" fill="${
-        status === 'connected' ? '#34C759' : 
-        status === 'connecting' ? '#FF9500' : 
-        '#8E8E93'
-      }"/>
-    </svg>
-  `;
-  return nativeImage.createFromBuffer(Buffer.from(canvas));
+  // Create a 16x16 black circle for macOS menu bar template image
+  // Using a data URL for reliability
+  const size = 16;
+  
+  // Black circle PNG (16x16) - base64 encoded minimal PNG
+  const blackCircleBase64 = 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAJklEQVQ4T2NkYGD4z0ABYBw1YDQMRsMARsMAAyP5fzDAYMjAAABWtgEJmF9sNQAAAABJRU5ErkJggg==';
+  
+  return nativeImage.createFromDataURL(`data:image/png;base64,${blackCircleBase64}`);
 }
 
 function createTray() {
-  tray = new Tray(getIcon('disconnected'));
+  const icon = getIcon('disconnected');
+  
+  tray = new Tray(icon);
   
   const contextMenu = Menu.buildFromTemplate([
     { label: 'Open Molt Connect', click: () => showMainWindow() },
@@ -49,14 +48,16 @@ function createTray() {
 
 function createMainWindow() {
   mainWindow = new BrowserWindow({
-    width: 420,
-    height: 640,
+    width: 360,
+    height: 500,
     show: false,
     frame: false,
     resizable: false,
-    transparent: true,
+    transparent: false,
     vibrancy: 'under-window',
     visualEffectState: 'active',
+    alwaysOnTop: true,
+    skipTaskbar: true,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
@@ -65,10 +66,21 @@ function createMainWindow() {
   });
   
   mainWindow.loadFile(path.join(__dirname, 'renderer', 'index.html'));
+}
+
+function showMainWindow() {
+  if (!mainWindow) {
+    createMainWindow();
+  }
   
-  mainWindow.on('blur', () => {
-    mainWindow?.hide();
-  });
+  // Position window near menu bar
+  const { screen } = require('electron');
+  const primaryDisplay = screen.getPrimaryDisplay();
+  const { width, height } = primaryDisplay.workAreaSize;
+  
+  // Position in top right corner
+  mainWindow?.setPosition(width - 380, 30);
+  mainWindow?.show();
 }
 
 function createSettingsWindow() {
@@ -95,13 +107,6 @@ function createSettingsWindow() {
   settingsWindow.on('closed', () => {
     settingsWindow = null;
   });
-}
-
-function showMainWindow() {
-  if (!mainWindow) {
-    createMainWindow();
-  }
-  mainWindow?.show();
 }
 
 function showSettings() {
@@ -207,12 +212,17 @@ app.whenReady().then(() => {
     mainWindow?.webContents.send('contact:removed', address);
   });
   
-  // Create UI
+  // Create tray and main window
   createTray();
   createMainWindow();
   
+  // Show window immediately on startup
+  showMainWindow();
+  
   // Auto-connect on startup
   connectToRelay();
+  
+  console.log('App ready - check menu bar for icon');
 });
 
 app.on('window-all-closed', () => {

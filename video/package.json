@@ -1,0 +1,21 @@
+{
+  "name": "molt-connect-video",
+  "version": "1.0.0",
+  "description": "30-second demo video for Molt Connect",
+  "scripts": {
+    "start": "npx remotion studio src/Root.tsx",
+    "build": "npx remotion render src/Root.tsx MoltConnectDemo out/molt-connect-demo.mp4",
+    "preview": "npx remotion preview src/Root.tsx"
+  },
+  "dependencies": {
+    "@remotion/cli": "^4.0.441",
+    "@remotion/transitions": "^4.0.441",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "remotion": "^4.0.441"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.14",
+    "typescript": "^5.9.3"
+  }
+}
