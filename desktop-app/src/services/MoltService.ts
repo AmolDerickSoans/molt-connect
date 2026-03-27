@@ -39,7 +39,7 @@ interface Settings {
 const store = new Store({
   defaults: {
     settings: {
-      relayUrl: 'wss://relay.moltbook.com',
+      relayUrl: 'http://localhost:8081',
       launchAtLogin: true,
       notifications: true,
       sound: true
