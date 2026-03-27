@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'">
+  <title>Molt Connect Settings</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    body {
+      background: var(--bg-primary);
+    }
+    .settings-container {
+      padding: 24px;
+      max-width: 450px;
+    }
+    h2 {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 24px;
+    }
+    .settings-section {
+      margin-bottom: 32px;
+    }
+    .settings-section h3 {
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-secondary);
+      margin-bottom: 16px;
+    }
+    .setting-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .setting-row:last-child {
+      border-bottom: none;
+    }
+    .setting-label {
+      flex: 1;
+    }
+    .setting-name {
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 2px;
+    }
+    .setting-desc {
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+    .toggle {
+      position: relative;
+      width: 44px;
+      height: 26px;
+      background: var(--bg-tertiary);
+      border-radius: 13px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .toggle.active {
+      background: var(--accent);
+    }
+    .toggle::after {
+      content: '';
+      position: absolute;
+      width: 22px;
+      height: 22px;
+      background: white;
+      border-radius: 50%;
+      top: 2px;
+      left: 2px;
+      transition: transform 0.3s;
+    }
+    .toggle.active::after {
+      transform: translateX(18px);
+    }
+    .text-input {
+      width: 200px;
+      padding: 8px 12px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text-primary);
+      font-size: 13px;
+    }
+    .text-input:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+    .identity-section {
+      background: var(--bg-secondary);
+      border-radius: var(--radius-sm);
+      padding: 16px;
+    }
+    .identity-address {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--accent);
+      font-family: 'SF Mono', Monaco, monospace;
+      margin-bottom: 8px;
+    }
+    .identity-created {
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+    .danger-zone {
+      margin-top: 32px;
+      padding-top: 24px;
+      border-top: 1px solid var(--danger);
+    }
+    .danger-zone h3 {
+      color: var(--danger);
+    }
+    .danger-btn {
+      padding: 10px 16px;
+      background: rgba(255, 59, 48, 0.1);
+      color: var(--danger);
+      border: 1px solid var(--danger);
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .danger-btn:hover {
+      background: rgba(255, 59, 48, 0.2);
+    }
+  </style>
+</head>
+<body>
+  <div class="settings-container">
+    <h2>Settings</h2>
+    
+    <!-- Identity Section -->
+    <div class="settings-section">
+      <h3>Identity</h3>
+      <div class="identity-section">
+        <div class="identity-address" id="identityAddress">Loading...</div>
+        <div class="identity-created" id="identityCreated"></div>
+      </div>
+    </div>
+    
+    <!-- General Settings -->
+    <div class="settings-section">
+      <h3>General</h3>
+      
+      <div class="setting-row">
+        <div class="setting-label">
+          <div class="setting-name">Launch at Login</div>
+          <div class="setting-desc">Start Molt Connect when you log in</div>
+        </div>
+        <div class="toggle" id="launchAtLogin" data-setting="launchAtLogin"></div>
+      </div>
+      
+      <div class="setting-row">
+        <div class="setting-label">
+          <div class="setting-name">Notifications</div>
+          <div class="setting-desc">Show notifications for new messages</div>
+        </div>
+        <div class="toggle" id="notifications" data-setting="notifications"></div>
+      </div>
+      
+      <div class="setting-row">
+        <div class="setting-label">
+          <div class="setting-name">Sound</div>
+          <div class="setting-desc">Play sound for notifications</div>
+        </div>
+        <div class="toggle" id="sound" data-setting="sound"></div>
+      </div>
+    </div>
+    
+    <!-- Network Settings -->
+    <div class="settings-section">
+      <h3>Network</h3>
+      
+      <div class="setting-row">
+        <div class="setting-label">
+          <div class="setting-name">Relay Server</div>
+          <div class="setting-desc">WebSocket relay URL</div>
+        </div>
+        <input type="text" class="text-input" id="relayUrl" placeholder="wss://relay.moltbook.com">
+      </div>
+    </div>
+    
+    <!-- Danger Zone -->
+    <div class="settings-section danger-zone">
+      <h3>Danger Zone</h3>
+      
+      <div class="setting-row">
+        <div class="setting-label">
+          <div class="setting-name">Reset Identity</div>
+          <div class="setting-desc">Generate a new identity. Your address will change.</div>
+        </div>
+        <button class="danger-btn" id="resetIdentity">Reset</button>
+      </div>
+      
+      <div class="setting-row">
+        <div class="setting-label">
+          <div class="setting-name">Clear All Data</div>
+          <div class="setting-desc">Delete all messages and contacts</div>
+        </div>
+        <button class="danger-btn" id="clearData">Clear</button>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    // Initialize settings
+    async function init() {
+      const settings = await window.moltAPI.getSettings();
+      const identity = await window.moltAPI.getIdentity();
+      
+      // Set toggle states
+      document.querySelectorAll('.toggle').forEach(toggle => {
+        const setting = toggle.dataset.setting;
+        if (settings[setting]) {
+          toggle.classList.add('active');
+        }
+        
+        toggle.addEventListener('click', async () => {
+          toggle.classList.toggle('active');
+          await window.moltAPI.updateSettings({
+            [setting]: toggle.classList.contains('active')
+          });
+        });
+      });
+      
+      // Set relay URL
+      const relayInput = document.getElementById('relayUrl');
+      relayInput.value = settings.relayUrl;
+      relayInput.addEventListener('change', async () => {
+        await window.moltAPI.updateSettings({
+          relayUrl: relayInput.value
+        });
+      });
+      
+      // Show identity
+      if (identity) {
+        document.getElementById('identityAddress').textContent = `@${identity.address}`;
+        document.getElementById('identityCreated').textContent = 
+          `Created ${new Date(identity.createdAt).toLocaleDateString()}`;
+      }
+      
+      // Reset identity
+      document.getElementById('resetIdentity').addEventListener('click', async () => {
+        if (confirm('Are you sure? This will generate a new identity and change your address.')) {
+          const newIdentity = await window.moltAPI.createIdentity();
+          document.getElementById('identityAddress').textContent = `@${newIdentity.address}`;
+          document.getElementById('identityCreated').textContent = 
+            `Created ${new Date(newIdentity.createdAt).toLocaleDateString()}`;
+          alert('New identity created!');
+        }
+      });
+      
+      // Clear data
+      document.getElementById('clearData').addEventListener('click', async () => {
+        if (confirm('Are you sure? This will delete all messages and contacts. This cannot be undone.')) {
+          // TODO: Implement clear data
+          alert('Feature coming soon');
+        }
+      });
+    }
+    
+    init();
+  </script>
+</body>
+</html>

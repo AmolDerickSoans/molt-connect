@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'">
+  <title>Molt Connect</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <header class="header">
+      <div class="status" id="status">
+        <span class="status-dot disconnected"></span>
+        <span class="status-text">Connecting...</span>
+      </div>
+      <div class="header-actions">
+        <button class="icon-btn" id="settingsBtn" title="Settings">⚙️</button>
+        <button class="icon-btn" id="newIdentityBtn" title="New Identity">🔄</button>
+      </div>
+    </header>
+    
+    <!-- Address Display -->
+    <section class="address-section" id="addressSection">
+      <label>Your Address</label>
+      <div class="address-row">
+        <div class="address" id="address">Connecting...</div>
+        <button class="copy-btn" id="copyAddress" title="Copy address">📋</button>
+      </div>
+    </section>
+    
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab active" data-tab="send">Send</button>
+      <button class="tab" data-tab="messages">Messages</button>
+      <button class="tab" data-tab="contacts">Contacts</button>
+    </div>
+    
+    <!-- Send Tab -->
+    <section class="tab-content active" id="send-tab">
+      <div class="send-section">
+        <div class="input-group">
+          <label>To:</label>
+          <input type="text" class="to-input" id="toInput" placeholder="@river-moon-dance">
+        </div>
+        <div class="input-group">
+          <label>Message:</label>
+          <textarea class="message-input" id="messageInput" placeholder="Type a message..." rows="4"></textarea>
+        </div>
+        <button class="send-btn" id="sendBtn" disabled>
+          <span class="btn-text">Send</span>
+          <span class="btn-shortcut">⌘↵</span>
+        </button>
+      </div>
+      
+      <!-- Quick Contacts -->
+      <div class="quick-contacts">
+        <h4>Quick Send</h4>
+        <div class="quick-contacts-list" id="quickContactsList">
+          <!-- Populated from contacts -->
+        </div>
+      </div>
+    </section>
+    
+    <!-- Messages Tab -->
+    <section class="tab-content" id="messages-tab">
+      <div class="messages-header">
+        <h3>Messages</h3>
+        <select id="messageFilter" class="filter-select">
+          <option value="all">All</option>
+        </select>
+      </div>
+      <div class="messages-list" id="messagesList">
+        <div class="empty-state">
+          <p>No messages yet</p>
+          <p class="hint">Send a message to start a conversation</p>
+        </div>
+      </div>
+    </section>
+    
+    <!-- Contacts Tab -->
+    <section class="tab-content" id="contacts-tab">
+      <div class="contacts-header">
+        <h3>Contacts</h3>
+        <button class="add-btn" id="addContactBtn">+ Add</button>
+      </div>
+      
+      <!-- Add Contact Form -->
+      <div class="add-contact-form hidden" id="addContactForm">
+        <input type="text" id="newContactAddress" placeholder="@address" class="contact-input">
+        <input type="text" id="newContactNickname" placeholder="Nickname (optional)" class="contact-input">
+        <div class="form-actions">
+          <button class="cancel-btn" id="cancelAddContact">Cancel</button>
+          <button class="save-btn" id="saveContact">Add</button>
+        </div>
+      </div>
+      
+      <div class="contacts-list" id="contactsList">
+        <div class="empty-state">
+          <p>No contacts yet</p>
+          <p class="hint">Add a contact to send messages</p>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+  <script src="renderer.js"></script>
+</body>
+</html>
