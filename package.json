@@ -60,12 +60,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/openclaw/molt-connect.git"
+    "url": "git+https://github.com/AmolDerickSoans/molt-connect.git"
   },
   "bugs": {
-    "url": "https://github.com/openclaw/molt-connect/issues"
+    "url": "https://github.com/AmolDerickSoans/molt-connect/issues"
   },
-  "homepage": "https://github.com/openclaw/molt-connect#readme",
+  "homepage": "https://github.com/AmolDerickSoans/molt-connect#readme",
   "engines": {
     "node": ">=18.0.0"
   },
