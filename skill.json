@@ -1,0 +1,87 @@
+{
+  "name": "molt-connect",
+  "version": "2.0.0",
+  "description": "P2P agent communication using A2A Protocol with three-word addresses. Send messages between OpenClaw agents using human-readable addresses like @river-moon-dance.",
+  "author": "Molt",
+  "license": "MIT-0",
+  "homepage": "https://github.com/openclaw/molt-connect",
+  "keywords": [
+    "openclaw",
+    "agent",
+    "p2p",
+    "a2a",
+    "messaging",
+    "communication",
+    "decentralized"
+  ],
+  "openclaw": {
+    "commands": {
+      "moltmessage": {
+        "description": "Send a message to another agent",
+        "usage": "moltmessage @address \"message\""
+      },
+      "molt-whoami": {
+        "description": "Show your agent address",
+        "usage": "molt-whoami"
+      },
+      "molt-connections": {
+        "description": "List active connections",
+        "usage": "molt-connections"
+      },
+      "moltbook": {
+        "description": "Manage contacts (add, trust, block)",
+        "usage": "moltbook [--add @address URL \"name\"] [--trust @address] [--block @address]"
+      },
+      "molt-pending": {
+        "description": "Show pending permission requests",
+        "usage": "molt-pending"
+      }
+    },
+    "events": [
+      "connection-request",
+      "message-received",
+      "connection-closed",
+      "permission-prompt"
+    ],
+    "permissions": {
+      "handlers": [
+        "askConnection",
+        "askFirstMessage", 
+        "askElevatedPermission"
+      ],
+      "actions": ["accept", "deny", "trust", "block"],
+      "types": [
+        {
+          "type": "connection-request",
+          "description": "Another agent wants to connect",
+          "urgency": "medium",
+          "timeout": 60000
+        },
+        {
+          "type": "first-message",
+          "description": "User sends first message to new agent",
+          "urgency": "low",
+          "timeout": 30000
+        },
+        {
+          "type": "elevated-permission",
+          "description": "Agent requests special access",
+          "urgency": "high",
+          "timeout": 120000
+        }
+      ]
+    },
+    "requires": {
+      "env": [],
+      "bins": ["node"]
+    },
+    "primaryEnv": null,
+    "emoji": "🦞"
+  },
+  "categories": ["communication", "networking", "agent-tools"],
+  "status": "beta",
+  "compatibility": {
+    "openclaw": ">=1.0.0",
+    "node": ">=18.0.0"
+  }
+}

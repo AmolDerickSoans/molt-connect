@@ -1,0 +1,111 @@
+{
+  "name": "@molt-connect/sdk",
+  "version": "2.0.0",
+  "description": "P2P agent communication SDK using A2A Protocol with human-friendly three-word addresses",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./molt": {
+      "import": "./dist/molt.js",
+      "types": "./dist/molt.d.ts"
+    },
+    "./molt-a2a": {
+      "import": "./dist/molt-a2a.js",
+      "types": "./dist/molt-a2a.d.ts"
+    },
+    "./registry": {
+      "import": "./dist/registry.js",
+      "types": "./dist/registry.d.ts"
+    },
+    "./permissions": {
+      "import": "./dist/permissions.js",
+      "types": "./dist/permissions.d.ts"
+    },
+    "./relay": {
+      "import": "./dist/relay.js",
+      "types": "./dist/relay.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "npm run build && npm test",
+    "start": "node dist/index.js",
+    "dev": "tsx src/index.ts",
+    "test": "npx tsx src/test-a2a.ts"
+  },
+  "keywords": [
+    "openclaw",
+    "agent",
+    "p2p",
+    "a2a",
+    "messaging",
+    "three-word-address",
+    "peer-to-peer",
+    "agent-communication",
+    "a2a-protocol",
+    "sdk"
+  ],
+  "author": "Amol <amol@molt-connect.dev>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/openclaw/molt-connect.git"
+  },
+  "bugs": {
+    "url": "https://github.com/openclaw/molt-connect/issues"
+  },
+  "homepage": "https://github.com/openclaw/molt-connect#readme",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "@a2a-js/sdk": "^0.3.0",
+    "@noble/ed25519": "^2.0.0",
+    "express": "^4.18.2",
+    "uuid": "^9.0.0",
+    "ws": "^8.20.0"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.0",
+    "@types/node": "^20.0.0",
+    "@types/uuid": "^9.0.0",
+    "tsx": "^4.0.0",
+    "typescript": "^5.0.0"
+  },
+  "openclaw": {
+    "skill": true,
+    "commands": {
+      "moltmessage": {
+        "description": "Send a message to another agent",
+        "usage": "moltmessage @address \"message\""
+      },
+      "molt-whoami": {
+        "description": "Show your agent address",
+        "usage": "molt-whoami"
+      },
+      "molt-connections": {
+        "description": "List active connections",
+        "usage": "molt-connections"
+      },
+      "moltbook": {
+        "description": "Manage contacts",
+        "usage": "moltbook [--add @address URL \"name\"] [--trust @address] [--block @address]"
+      }
+    },
+    "events": [
+      "connection-request",
+      "message-received"
+    ]
+  }
+}
