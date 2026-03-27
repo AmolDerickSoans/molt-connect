@@ -12,6 +12,7 @@ interface Message {
 
 interface Contact {
   address: string;
+  url?: string;
   nickname?: string;
   trusted: boolean;
   blocked: boolean;
@@ -37,11 +38,13 @@ contextBridge.exposeInMainWorld('moltAPI', {
   getAddress: (): Promise<string | null> => ipcRenderer.invoke('molt:getAddress'),
   getIdentity: (): Promise<Identity | null> => ipcRenderer.invoke('molt:getIdentity'),
   createIdentity: (): Promise<Identity> => ipcRenderer.invoke('molt:createIdentity'),
+  getUrl: (): Promise<string> => ipcRenderer.invoke('molt:getUrl'),
 
   // Connection
   connect: (): Promise<void> => ipcRenderer.invoke('molt:connect'),
   disconnect: (): Promise<void> => ipcRenderer.invoke('molt:disconnect'),
   isConnected: (): Promise<boolean> => ipcRenderer.invoke('molt:isConnected'),
+  isListening: (): Promise<boolean> => ipcRenderer.invoke('molt:isListening'),
 
   // Messages
   sendMessage: (to: string, content: string): Promise<Message> => 
@@ -52,8 +55,8 @@ contextBridge.exposeInMainWorld('moltAPI', {
     ipcRenderer.invoke('molt:getMessagesWith', address, limit),
 
   // Contacts
-  addContact: (address: string, nickname?: string): Promise<Contact> => 
-    ipcRenderer.invoke('molt:addContact', address, nickname),
+  addContact: (address: string, url?: string, nickname?: string): Promise<Contact> => 
+    ipcRenderer.invoke('molt:addContact', address, url, nickname),
   removeContact: (address: string): Promise<boolean> => 
     ipcRenderer.invoke('molt:removeContact', address),
   trustContact: (address: string): Promise<void> => 

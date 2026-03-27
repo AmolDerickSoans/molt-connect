@@ -1,12 +1,20 @@
 import { ipcMain } from 'electron';
 import Store from 'electron-store';
-import * as crypto from 'crypto';
-import * as fs from 'fs';
 import * as path from 'path';
+import * as fs from 'fs';
 import { EventEmitter } from 'events';
+
+// Import from Molt SDK
+import { 
+  getOrCreateIdentity, 
+  createMoltConnectServer,
+  sendMoltMessage,
+  toThreeWord
+} from '../../../dist/molt-a2a.js';
 
 interface Contact {
   address: string;
+  url?: string;
   nickname?: string;
   trusted: boolean;
   blocked: boolean;
@@ -31,6 +39,7 @@ interface Identity {
 
 interface Settings {
   relayUrl: string;
+  listenPort: number;
   launchAtLogin: boolean;
   notifications: boolean;
   sound: boolean;
@@ -39,7 +48,8 @@ interface Settings {
 const store = new Store({
   defaults: {
     settings: {
-      relayUrl: 'http://localhost:8081',
+      relayUrl: 'http://localhost:8080',
+      listenPort: 4001,
       launchAtLogin: true,
       notifications: true,
       sound: true
@@ -47,27 +57,16 @@ const store = new Store({
   }
 });
 
-// Word lists for three-word address generation
-const WORDS = {
-  adjectives: ['red', 'blue', 'green', 'fast', 'slow', 'bright', 'dark', 'soft', 'hard', 'wild', 'calm', 'sharp', 'smooth', 'rough', 'warm', 'cold', 'fire', 'river', 'mountain', 'ocean'],
-  nouns: ['fox', 'wolf', 'bear', 'eagle', 'hawk', 'lion', 'tiger', 'deer', 'owl', 'swan', 'crane', 'raven', 'hawk', 'finch', 'dove', 'peace', 'dance', 'song', 'star', 'moon'],
-  verbs: ['run', 'fly', 'swim', 'dance', 'sing', 'jump', 'climb', 'dive', 'glide', 'soar', 'walk', 'ride', 'drive', 'stop', 'start', 'turn', 'spin', 'leap', 'hop', 'skip']
-};
-
-function generateThreeWordAddress(): string {
-  const adj = WORDS.adjectives[Math.floor(Math.random() * WORDS.adjectives.length)];
-  const noun = WORDS.nouns[Math.floor(Math.random() * WORDS.nouns.length)];
-  const verb = WORDS.verbs[Math.floor(Math.random() * WORDS.verbs.length)];
-  return `${adj}-${noun}-${verb}`;
-}
-
 export class MoltService extends EventEmitter {
   private identity: Identity | null = null;
   private contacts: Map<string, Contact> = new Map();
   private messages: Message[] = [];
   private connected = false;
+  private listening = false;
   private settings: Settings;
   private dataPath: string;
+  private server: any = null;
+  private agentUrl: string = '';
 
   constructor() {
     super();
@@ -81,7 +80,8 @@ export class MoltService extends EventEmitter {
 
   private getDefaultSettings(): Settings {
     return {
-      relayUrl: 'wss://relay.moltbook.com',
+      relayUrl: 'http://localhost:8080',
+      listenPort: 4001,
       launchAtLogin: true,
       notifications: true,
       sound: true
@@ -139,19 +139,25 @@ export class MoltService extends EventEmitter {
     );
   }
 
-  // Identity management
+  // Identity management - uses real SDK
   async createIdentity(): Promise<Identity> {
-    const { publicKey, privateKey } = crypto.generateKeyPairSync('ed25519');
-    
-    this.identity = {
-      address: generateThreeWordAddress(),
-      publicKey: publicKey.export({ type: 'spki', format: 'pem' }) as string,
-      privateKey: privateKey.export({ type: 'pkcs8', format: 'pem' }) as string,
-      createdAt: Date.now()
-    };
-    
-    this.saveIdentity();
-    return this.identity;
+    try {
+      // Use the real SDK to create identity
+      const sdkIdentity = await getOrCreateIdentity();
+      
+      this.identity = {
+        address: sdkIdentity.address,
+        publicKey: sdkIdentity.publicKey,
+        privateKey: sdkIdentity.privateKey,
+        createdAt: Date.now()
+      };
+      
+      this.saveIdentity();
+      return this.identity;
+    } catch (error) {
+      console.error('Failed to create identity:', error);
+      throw error;
+    }
   }
 
   getIdentity(): Identity | null {
@@ -168,14 +174,61 @@ export class MoltService extends EventEmitter {
       await this.createIdentity();
     }
     
-    // Simulate connection for now
-    // TODO: Replace with actual WebSocket connection to relay
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    // Start listening server
+    if (!this.listening) {
+      await this.startListening();
+    }
+    
     this.connected = true;
     this.emit('connected');
   }
 
+  async startListening(): Promise<void> {
+    if (this.listening) return;
+    
+    try {
+      const port = this.settings.listenPort || 4001;
+      this.agentUrl = `http://localhost:${port}`;
+      
+      // Create Molt Connect server
+      this.server = await createMoltConnectServer({
+        port,
+        onMessage: async (from: string, message: string) => {
+          this.handleIncomingMessage(from, message);
+          return 'OK';
+        }
+      });
+      
+      this.listening = true;
+      console.log(`Molt Connect listening on ${this.agentUrl}`);
+      
+    } catch (error) {
+      console.error('Failed to start listening:', error);
+      throw error;
+    }
+  }
+
+  private handleIncomingMessage(from: string, content: string) {
+    const message: Message = {
+      id: crypto.randomUUID(),
+      from,
+      to: this.identity?.address || '',
+      content,
+      timestamp: Date.now(),
+      outgoing: false
+    };
+
+    this.messages.push(message);
+    this.saveMessages();
+    this.emit('message:received', message);
+  }
+
   disconnect(): void {
+    if (this.server) {
+      // Stop the server
+      this.server = null;
+    }
+    this.listening = false;
     this.connected = false;
     this.emit('disconnected');
   }
@@ -184,7 +237,15 @@ export class MoltService extends EventEmitter {
     return this.connected;
   }
 
-  // Messaging
+  isListening(): boolean {
+    return this.listening;
+  }
+
+  getUrl(): string {
+    return this.agentUrl;
+  }
+
+  // Messaging - uses real SDK
   async sendMessage(to: string, content: string): Promise<Message> {
     if (!this.identity) {
       throw new Error('No identity');
@@ -194,24 +255,38 @@ export class MoltService extends EventEmitter {
       throw new Error('Not connected');
     }
 
-    const message: Message = {
-      id: crypto.randomUUID(),
-      from: this.identity.address,
-      to,
-      content,
-      timestamp: Date.now(),
-      outgoing: true
-    };
-
-    // Simulate send for now
-    // TODO: Replace with actual send via relay
-    await new Promise(resolve => setTimeout(resolve, 100));
+    // Find contact URL
+    const contact = this.contacts.get(to);
+    const targetUrl = contact?.url || `http://localhost:4002`; // Default for testing
     
-    this.messages.push(message);
-    this.saveMessages();
-    this.emit('message:sent', message);
+    try {
+      // Use real SDK to send message
+      const response = await sendMoltMessage(targetUrl, content, {
+        address: this.identity.address,
+        publicKey: this.identity.publicKey,
+        privateKey: this.identity.privateKey,
+        createdAt: String(this.identity.createdAt)
+      });
 
-    return message;
+      const message: Message = {
+        id: crypto.randomUUID(),
+        from: this.identity.address,
+        to,
+        content,
+        timestamp: Date.now(),
+        outgoing: true
+      };
+
+      this.messages.push(message);
+      this.saveMessages();
+      this.emit('message:sent', message);
+
+      return message;
+      
+    } catch (error) {
+      console.error('Failed to send message:', error);
+      throw error;
+    }
   }
 
   receiveMessage(from: string, content: string): Message {
@@ -242,9 +317,10 @@ export class MoltService extends EventEmitter {
   }
 
   // Contact management
-  addContact(address: string, nickname?: string): Contact {
+  addContact(address: string, url?: string, nickname?: string): Contact {
     const contact: Contact = {
       address,
+      url,
       nickname,
       trusted: false,
       blocked: false,
@@ -333,11 +409,13 @@ export function registerMoltIPC() {
   ipcMain.handle('molt:getAddress', () => service.getAddress());
   ipcMain.handle('molt:getIdentity', () => service.getIdentity());
   ipcMain.handle('molt:createIdentity', () => service.createIdentity());
+  ipcMain.handle('molt:getUrl', () => service.getUrl());
 
   // Connection
   ipcMain.handle('molt:connect', () => service.connect());
   ipcMain.handle('molt:disconnect', () => service.disconnect());
   ipcMain.handle('molt:isConnected', () => service.isConnected());
+  ipcMain.handle('molt:isListening', () => service.isListening());
 
   // Messages
   ipcMain.handle('molt:send', (_e, to: string, content: string) => service.sendMessage(to, content));
@@ -346,8 +424,8 @@ export function registerMoltIPC() {
     service.getMessagesWithContact(address, limit));
 
   // Contacts
-  ipcMain.handle('molt:addContact', (_e, address: string, nickname?: string) => 
-    service.addContact(address, nickname));
+  ipcMain.handle('molt:addContact', (_e, address: string, url?: string, nickname?: string) => 
+    service.addContact(address, url, nickname));
   ipcMain.handle('molt:removeContact', (_e, address: string) => service.removeContact(address));
   ipcMain.handle('molt:trustContact', (_e, address: string) => service.trustContact(address));
   ipcMain.handle('molt:blockContact', (_e, address: string) => service.blockContact(address));
