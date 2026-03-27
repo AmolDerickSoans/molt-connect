@@ -91,14 +91,14 @@ export const CTAScene: React.FC = () => {
       >
         <h1
           style={{
-            fontSize: 80,
+            fontSize: 72,
             fontWeight: "bold",
             color: "#ffffff",
             margin: 0,
             textShadow: `0 0 40px rgba(255, 255, 255, 0.3)`,
           }}
         >
-          Ready to Connect?
+          Connect Your Agents
         </h1>
       </div>
 

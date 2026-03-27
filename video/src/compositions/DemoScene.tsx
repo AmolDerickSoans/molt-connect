@@ -8,134 +8,217 @@ import {
 } from "remotion";
 
 const BACKGROUND_COLOR = "#0a0a0a";
-const ACCENT_COLOR = "#00ff00";
+const ACCENT_GREEN = "#00ff00";
+const ACCENT_CYAN = "#00aaff";
 
-type MessageDemoProps = {
-  agentName: string;
+// Split-screen terminal component
+type SplitTerminalProps = {
+  side: "left" | "right";
   address: string;
-  messages: Array<{ from: "self" | "other"; text: string; startFrame: number }>;
   accentColor: string;
-  startX: number;
+  label: string;
+  children: React.ReactNode;
+  startFrame: number;
 };
 
-const MessageDemo: React.FC<MessageDemoProps> = ({
-  agentName,
+const SplitTerminal: React.FC<SplitTerminalProps> = ({
+  side,
   address,
-  messages,
   accentColor,
-  startX,
+  label,
+  children,
+  startFrame,
 }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
+  const localFrame = frame - startFrame;
 
-  const containerSpring = spring({
-    frame,
+  const scale = spring({
+    frame: localFrame,
     fps,
     config: { damping: 200 },
+  });
+
+  const opacity = interpolate(localFrame, [0, 15], [0, 1], {
+    extrapolateRight: "clamp",
   });
 
   return (
     <div
       style={{
         width: 520,
-        height: 520,
+        height: 600,
         backgroundColor: "#0d0d0d",
-        borderRadius: 16,
+        borderRadius: 12,
         border: `1px solid #333`,
         overflow: "hidden",
-        transform: `scale(${containerSpring})`,
-        boxShadow: `0 0 30px rgba(${accentColor === "#00ff00" ? "0, 255, 0" : "0, 170, 255"}, 0.2)`,
+        transform: `scale(${scale})`,
+        opacity,
+        boxShadow: `0 0 40px rgba(${accentColor === ACCENT_GREEN ? "0, 255, 0" : "0, 170, 255"}, 0.2)`,
+        fontFamily: "monospace",
       }}
     >
-      {/* Header */}
+      {/* Terminal header */}
       <div
         style={{
-          height: 50,
+          height: 44,
           backgroundColor: "#1a1a1a",
-          borderBottom: "1px solid #333",
           display: "flex",
           alignItems: "center",
           padding: "0 16px",
-          gap: 12,
+          borderBottom: "1px solid #333",
         }}
       >
-        <div
-          style={{
-            width: 36,
-            height: 36,
-            borderRadius: 10,
-            backgroundColor: "#222",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            border: `2px solid ${accentColor}`,
-          }}
-        >
-          <span style={{ fontSize: 18 }}>🤖</span>
+        {/* Window controls */}
+        <div style={{ display: "flex", gap: 8 }}>
+          <div
+            style={{
+              width: 12,
+              height: 12,
+              borderRadius: "50%",
+              backgroundColor: "#ff5f56",
+            }}
+          />
+          <div
+            style={{
+              width: 12,
+              height: 12,
+              borderRadius: "50%",
+              backgroundColor: "#ffbd2e",
+            }}
+          />
+          <div
+            style={{
+              width: 12,
+              height: 12,
+              borderRadius: "50%",
+              backgroundColor: "#27c93f",
+            }}
+          />
         </div>
-        <div>
-          <div style={{ color: "#fff", fontSize: 14, fontWeight: "600" }}>
-            {agentName}
+        {/* Agent info */}
+        <div style={{ marginLeft: 16, display: "flex", alignItems: "center", gap: 10 }}>
+          <div
+            style={{
+              width: 28,
+              height: 28,
+              borderRadius: 8,
+              backgroundColor: "#222",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              border: `2px solid ${accentColor}`,
+            }}
+          >
+            <span style={{ fontSize: 14 }}>🤖</span>
           </div>
-          <div style={{ color: accentColor, fontSize: 12, fontFamily: "monospace" }}>
-            {address}
+          <div>
+            <div style={{ color: "#fff", fontSize: 12, fontWeight: "600" }}>{label}</div>
+            <div style={{ color: accentColor, fontSize: 11 }}>{address}</div>
           </div>
         </div>
       </div>
 
-      {/* Messages */}
+      {/* Terminal content */}
       <div
         style={{
-          padding: 20,
-          display: "flex",
-          flexDirection: "column",
-          gap: 12,
-          height: 470,
+          padding: 16,
+          color: accentColor,
+          fontSize: 13,
+          lineHeight: 1.7,
+          height: 556,
           overflow: "hidden",
         }}
       >
-        {messages.map((msg, idx) => {
-          const localFrame = frame - msg.startFrame;
-          if (localFrame < 0) return null;
-
-          const opacity = interpolate(localFrame, [0, 10], [0, 1], {
-            extrapolateRight: "clamp",
-          });
-
-          const translateX = interpolate(localFrame, [0, 15], [msg.from === "self" ? 20 : -20, 0], {
-            extrapolateRight: "clamp",
-          });
-
-          const isSelf = msg.from === "self";
-
-          return (
-            <div
-              key={idx}
-              style={{
-                alignSelf: isSelf ? "flex-end" : "flex-start",
-                opacity,
-                transform: `translateX(${translateX}px)`,
-              }}
-            >
-              <div
-                style={{
-                  backgroundColor: isSelf ? accentColor : "#2a2a2a",
-                  color: isSelf ? "#000" : "#fff",
-                  padding: "12px 16px",
-                  borderRadius: 16,
-                  borderBottomRightRadius: isSelf ? 4 : 16,
-                  borderBottomLeftRadius: isSelf ? 16 : 4,
-                  fontSize: 14,
-                  fontFamily: "monospace",
-                  maxWidth: 300,
-                }}
-              >
-                {msg.text}
-              </div>
-            </div>
-          );
-        })}
+        {children}
       </div>
+    </div>
+  );
+};
+
+// Animated line component for messages
+type TerminalLineProps = {
+  prefix?: string;
+  text: string;
+  startFrame: number;
+  color?: string;
+  typewriter?: boolean;
+};
+
+const TerminalLine: React.FC<TerminalLineProps> = ({
+  prefix = "$ ",
+  text,
+  startFrame,
+  color = ACCENT_GREEN,
+  typewriter = true,
+}) => {
+  const frame = useCurrentFrame();
+  const localFrame = frame - startFrame;
+
+  if (localFrame < 0) return null;
+
+  const charsPerFrame = typewriter ? 1.5 : text.length;
+  const charsToShow = Math.min(text.length, Math.max(0, Math.floor(localFrame * charsPerFrame)));
+  const opacity = interpolate(localFrame, [0, 5], [0, 1], { extrapolateRight: "clamp" });
+
+  return (
+    <div style={{ color, marginBottom: 6, opacity }}>
+      <span style={{ color: "#666" }}>{prefix}</span>
+      {text.slice(0, charsToShow)}
+    </div>
+  );
+};
+
+// Message send animation
+type MessageSendProps = {
+  fromSide: "left" | "right";
+  startFrame: number;
+  duration: number;
+};
+
+const MessageSendAnimation: React.FC<MessageSendProps> = ({ fromSide, startFrame, duration }) => {
+  const frame = useCurrentFrame();
+  const localFrame = frame - startFrame;
+
+  if (localFrame < 0 || localFrame > duration) return null;
+
+  const progress = interpolate(localFrame, [0, duration], [0, 1], {
+    extrapolateRight: "clamp",
+  });
+
+  const startX = fromSide === "left" ? 260 : 960;
+  const endX = fromSide === "left" ? 960 : 260;
+  const currentX = interpolate(progress, [0, 1], [startX, endX]);
+
+  const opacity = progress < 0.1 || progress > 0.9
+    ? interpolate(progress, progress < 0.1 ? [0, 0.1] : [0.9, 1], [0, 1], { extrapolateRight: "clamp" })
+    : 1;
+
+  const scale = 1 + Math.sin(progress * Math.PI) * 0.3;
+
+  return (
+    <div
+      style={{
+        position: "absolute",
+        left: currentX - 60,
+        top: 480,
+        width: 120,
+        padding: "8px 16px",
+        backgroundColor: fromSide === "left" ? ACCENT_GREEN : ACCENT_CYAN,
+        borderRadius: 20,
+        opacity,
+        transform: `scale(${scale})`,
+        boxShadow: `0 0 30px ${fromSide === "left" ? ACCENT_GREEN : ACCENT_CYAN}`,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: 8,
+        zIndex: 100,
+      }}
+    >
+      <span style={{ color: "#000", fontSize: 14, fontWeight: "bold" }}>
+        {fromSide === "left" ? "Hello!" + " →" : "← " + "Hey!"}
+      </span>
     </div>
   );
 };
@@ -155,32 +238,27 @@ export const DemoScene: React.FC = () => {
     extrapolateRight: "clamp",
   });
 
-  // Agent 1 messages
-  const agent1Messages = [
-    { from: "self" as const, text: "Hey! Can you help me with a task?", startFrame: 30 },
-    { from: "other" as const, text: "Sure! What do you need?", startFrame: 90 },
-    { from: "self" as const, text: "I need to analyze some data...", startFrame: 150 },
-  ];
+  // Message timing (total 300 frames = 10 seconds)
+  // Agent A sends at frame 60 (2s)
+  // Message travels frames 60-90
+  // Agent B receives at frame 90 (3s)
+  // Agent B replies at frame 150 (5s)
+  // Reply travels frames 150-180
+  // Agent A receives at frame 180 (6s)
+  // Another exchange
 
-  // Agent 2 messages (mirrored perspective)
-  const agent2Messages = [
-    { from: "other" as const, text: "Hey! Can you help me with a task?", startFrame: 30 },
-    { from: "self" as const, text: "Sure! What do you need?", startFrame: 90 },
-    { from: "other" as const, text: "I need to analyze some data...", startFrame: 150 },
-  ];
-
-  // Connection animation
-  const connectionOpacity = interpolate(frame, [20, 35], [0, 1], {
+  // Connection pulse
+  const connectionOpacity = interpolate(frame, [30, 50], [0, 1], {
     extrapolateRight: "clamp",
   });
 
-  const pulseScale = 1 + Math.sin(frame * 0.1) * 0.1;
+  const pulseGlow = 0.3 + Math.sin(frame * 0.15) * 0.2;
 
   return (
     <AbsoluteFill
       style={{
         backgroundColor: BACKGROUND_COLOR,
-        padding: 60,
+        padding: 40,
         flexDirection: "column",
       }}
     >
@@ -190,7 +268,7 @@ export const DemoScene: React.FC = () => {
           transform: `scale(${titleSpring})`,
           opacity: titleOpacity,
           textAlign: "center",
-          marginBottom: 40,
+          marginBottom: 30,
         }}
       >
         <h1
@@ -201,7 +279,7 @@ export const DemoScene: React.FC = () => {
             margin: 0,
           }}
         >
-          Real-time P2P Communication
+          Real-time P2P Messaging
         </h1>
       </div>
 
@@ -212,18 +290,69 @@ export const DemoScene: React.FC = () => {
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-          gap: 40,
+          gap: 80,
           position: "relative",
         }}
       >
-        {/* Agent 1 */}
-        <MessageDemo
-          agentName="Agent Alpha"
-          address="swift-crane-owl"
-          messages={agent1Messages}
-          accentColor="#00ff00"
-          startX={0}
-        />
+        {/* Agent A Terminal (Left) */}
+        <SplitTerminal
+          side="left"
+          address="@dear-body-onyx"
+          accentColor={ACCENT_GREEN}
+          label="Agent A"
+          startFrame={15}
+        >
+          <TerminalLine
+            text={'$ molt send @love-blaze-bronze "Hello!"'}
+            startFrame={30}
+            color={ACCENT_GREEN}
+          />
+          <TerminalLine
+            text="→ Sending message..."
+            startFrame={55}
+            color="#888"
+            prefix=""
+          />
+          <TerminalLine
+            text="✓ Message delivered"
+            startFrame={95}
+            color="#27c93f"
+            prefix=""
+          />
+          <TerminalLine
+            text=""
+            startFrame={100}
+            prefix=""
+          />
+          <TerminalLine
+            text="📨 Received from @love-blaze-bronze:"
+            startFrame={185}
+            color={ACCENT_CYAN}
+            prefix=""
+          />
+          <TerminalLine
+            text={'   "Hey! What\'s up?"'}
+            startFrame={200}
+            color="#fff"
+            prefix=""
+          />
+          <TerminalLine
+            text=""
+            startFrame={210}
+            prefix=""
+          />
+          <TerminalLine
+            text={'$ molt send @love-blaze-bronze "Working on something cool!"'}
+            startFrame={220}
+            color={ACCENT_GREEN}
+          />
+          <TerminalLine
+            text="→ Sending message..."
+            startFrame={260}
+            color="#888"
+            prefix=""
+          />
+        </SplitTerminal>
 
         {/* Connection indicator */}
         <div
@@ -232,41 +361,116 @@ export const DemoScene: React.FC = () => {
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
-            gap: 8,
+            gap: 12,
             opacity: connectionOpacity,
+            zIndex: 50,
           }}
         >
+          {/* Animated connection line */}
           <div
             style={{
-              width: 200,
-              height: 3,
-              background: `linear-gradient(90deg, #00ff00, #00aaff)`,
+              width: 100,
+              height: 4,
+              background: `linear-gradient(90deg, ${ACCENT_GREEN}, ${ACCENT_CYAN})`,
               borderRadius: 2,
+              boxShadow: `0 0 20px rgba(0, 255, 0, ${pulseGlow})`,
             }}
           />
           <div
             style={{
-              padding: "8px 16px",
+              padding: "10px 20px",
               backgroundColor: "#1a1a1a",
               borderRadius: 20,
               border: "1px solid #333",
-              transform: `scale(${pulseScale})`,
+              boxShadow: `0 0 20px rgba(0, 255, 0, ${pulseGlow * 0.5})`,
             }}
           >
-            <span style={{ color: ACCENT_COLOR, fontSize: 12, fontWeight: "600" }}>
+            <span style={{ color: ACCENT_GREEN, fontSize: 12, fontWeight: "600" }}>
               🔗 ENCRYPTED P2P
             </span>
           </div>
         </div>
 
-        {/* Agent 2 */}
-        <MessageDemo
-          agentName="Agent Beta"
-          address="bright-moon-fox"
-          messages={agent2Messages}
-          accentColor="#00aaff"
-          startX={0}
-        />
+        {/* Agent B Terminal (Right) */}
+        <SplitTerminal
+          side="right"
+          address="@love-blaze-bronze"
+          accentColor={ACCENT_CYAN}
+          label="Agent B"
+          startFrame={15}
+        >
+          <TerminalLine
+            text="Waiting for messages..."
+            startFrame={30}
+            color="#888"
+            prefix=""
+          />
+          <TerminalLine
+            text=""
+            startFrame={50}
+            prefix=""
+          />
+          <TerminalLine
+            text="📨 Received from @dear-body-onyx:"
+            startFrame={95}
+            color={ACCENT_GREEN}
+            prefix=""
+          />
+          <TerminalLine
+            text={'   "Hello!"'}
+            startFrame={110}
+            color="#fff"
+            prefix=""
+          />
+          <TerminalLine
+            text=""
+            startFrame={120}
+            prefix=""
+          />
+          <TerminalLine
+            text={'$ molt send @dear-body-onyx "Hey! What\'s up?"'}
+            startFrame={130}
+            color={ACCENT_CYAN}
+          />
+          <TerminalLine
+            text="→ Sending message..."
+            startFrame={155}
+            color="#888"
+            prefix=""
+          />
+          <TerminalLine
+            text="✓ Message delivered"
+            startFrame={185}
+            color="#27c93f"
+            prefix=""
+          />
+        </SplitTerminal>
+
+        {/* Message travel animations */}
+        <MessageSendAnimation fromSide="left" startFrame={60} duration={30} />
+        <MessageSendAnimation fromSide="right" startFrame={155} duration={30} />
+      </div>
+
+      {/* Bottom info bar */}
+      <div
+        style={{
+          marginTop: 20,
+          opacity: interpolate(frame, [250, 270], [0, 1], {
+            extrapolateRight: "clamp",
+          }),
+          display: "flex",
+          justifyContent: "center",
+          gap: 60,
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <div style={{ width: 10, height: 10, borderRadius: "50%", backgroundColor: ACCENT_GREEN }} />
+          <span style={{ color: "#888", fontSize: 14 }}>Agent A: @dear-body-onyx</span>
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <div style={{ width: 10, height: 10, borderRadius: "50%", backgroundColor: ACCENT_CYAN }} />
+          <span style={{ color: "#888", fontSize: 14 }}>Agent B: @love-blaze-bronze</span>
+        </div>
       </div>
     </AbsoluteFill>
   );
