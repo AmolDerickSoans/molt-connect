@@ -3,81 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Molt Connect</title>
-    <meta name="description" content="Connect agents directly. No servers. No intermediaries.">
+    <title>Molt Connect — P2P Agent Messaging</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --color-black: #1d1d1f;
-            --color-white: #ffffff;
-            --color-gray-100: #f5f5f7;
-            --color-gray-200: #e8e8ed;
-            --color-gray-300: #d2d2d7;
-            --color-gray-400: #86868b;
-            --color-gray-500: #6e6e73;
-            --color-gray-600: #424245;
-            --color-accent: #007AFF;
-            --color-accent-hover: #0066d6;
-            --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
-            --transition: 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
-        }
-
-        @media (prefers-color-scheme: dark) {
-            :root {
-                --color-black: #ffffff;
-                --color-white: #000000;
-                --color-gray-100: #1c1c1e;
-                --color-gray-200: #2c2c2e;
-                --color-gray-300: #3a3a3c;
-                --color-gray-400: #636366;
-                --color-gray-500: #8e8e93;
-                --color-gray-600: #aeaeb2;
-            }
-        }
-
         *, *::before, *::after {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
+        :root {
+            --color-bg: #FFFFFF;
+            --color-bg-secondary: #FAFAFA;
+            --color-text: #000000;
+            --color-text-secondary: #6B7280;
+            --color-text-tertiary: #9CA3AF;
+            --color-border: #E5E7EB;
+            --color-accent: #007AFF;
+            --color-accent-hover: #0056CC;
+            --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            --max-width: 1200px;
+            --transition: 150ms ease;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --color-bg: #000000;
+                --color-bg-secondary: #0A0A0A;
+                --color-text: #FFFFFF;
+                --color-text-secondary: #9CA3AF;
+                --color-text-tertiary: #6B7280;
+                --color-border: #1F2937;
+                --color-accent: #0A84FF;
+                --color-accent-hover: #409CFF;
+            }
+        }
+
         html {
             scroll-behavior: smooth;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
+            font-size: 16px;
         }
 
         body {
             font-family: var(--font-sans);
-            font-size: 17px;
-            line-height: 1.47059;
-            font-weight: 400;
-            letter-spacing: -0.022em;
-            color: var(--color-black);
-            background-color: var(--color-white);
+            background: var(--color-bg);
+            color: var(--color-text);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
-        /* Animations */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes fadeInDelayed {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .animate-in {
-            opacity: 0;
-            animation: fadeIn 0.8s var(--transition) forwards;
-        }
-
-        .animate-in-delayed {
-            opacity: 0;
-            animation: fadeInDelayed 1s var(--transition) 0.2s forwards;
+        .container {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: 0 24px;
         }
 
         /* Navigation */
@@ -86,633 +67,586 @@
             top: 0;
             left: 0;
             right: 0;
-            z-index: 1000;
+            z-index: 100;
             background: rgba(255, 255, 255, 0.8);
             backdrop-filter: saturate(180%) blur(20px);
             -webkit-backdrop-filter: saturate(180%) blur(20px);
-            border-bottom: 0.5px solid var(--color-gray-200);
+            border-bottom: 1px solid var(--color-border);
         }
 
         @media (prefers-color-scheme: dark) {
             nav {
                 background: rgba(0, 0, 0, 0.8);
-                border-bottom-color: var(--color-gray-300);
             }
         }
 
-        .nav-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 48px;
-            height: 48px;
+        .nav-inner {
             display: flex;
             align-items: center;
             justify-content: space-between;
+            height: 52px;
         }
 
-        .nav-logo {
-            font-size: 21px;
-            font-weight: 600;
-            letter-spacing: -0.02em;
-            color: var(--color-black);
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
             text-decoration: none;
+            color: var(--color-text);
+        }
+
+        .logo-icon {
+            width: 28px;
+            height: 28px;
+            background: var(--color-text);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-icon svg {
+            width: 16px;
+            height: 16px;
+            color: var(--color-bg);
+        }
+
+        .logo-text {
+            font-size: 15px;
+            font-weight: 600;
+            letter-spacing: -0.01em;
         }
 
         .nav-links {
-            display: flex;
+            display: none;
             align-items: center;
             gap: 32px;
-            list-style: none;
+        }
+
+        @media (min-width: 768px) {
+            .nav-links {
+                display: flex;
+            }
         }
 
         .nav-links a {
             font-size: 14px;
-            font-weight: 400;
-            color: var(--color-gray-500);
+            color: var(--color-text-secondary);
             text-decoration: none;
             transition: color var(--transition);
         }
 
         .nav-links a:hover {
-            color: var(--color-black);
+            color: var(--color-text);
         }
 
-        /* Hero Section */
+        .nav-cta {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--color-accent);
+            text-decoration: none;
+            transition: color var(--transition);
+        }
+
+        .nav-cta:hover {
+            color: var(--color-accent-hover);
+        }
+
+        /* Hero */
         .hero {
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             justify-content: center;
-            align-items: center;
-            text-align: center;
-            padding: 120px 48px 80px;
-            background: linear-gradient(180deg, 
-                var(--color-white) 0%, 
-                var(--color-gray-100) 100%
-            );
-            position: relative;
-            overflow: hidden;
-        }
-
-        @media (prefers-color-scheme: dark) {
-            .hero {
-                background: linear-gradient(180deg, 
-                    #000000 0%, 
-                    #0a0a0a 100%
-                );
-            }
-        }
-
-        .hero::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 150%;
-            height: 100%;
-            background: radial-gradient(ellipse at center top, 
-                rgba(0, 122, 255, 0.03) 0%, 
-                transparent 60%
-            );
-            pointer-events: none;
+            padding: 120px 0 80px;
         }
 
         .hero-content {
-            max-width: 900px;
-            position: relative;
-            z-index: 1;
+            max-width: 800px;
         }
 
-        .hero h1 {
-            font-size: clamp(48px, 10vw, 96px);
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--color-text-secondary);
+            margin-bottom: 32px;
+        }
+
+        .hero-badge-dot {
+            width: 6px;
+            height: 6px;
+            background: #34C759;
+            border-radius: 50%;
+        }
+
+        .hero-title {
+            font-size: clamp(40px, 8vw, 72px);
             font-weight: 700;
-            letter-spacing: -0.04em;
-            line-height: 1.04;
+            letter-spacing: -0.03em;
+            line-height: 1.05;
             margin-bottom: 24px;
         }
 
-        .hero p {
-            font-size: clamp(19px, 3vw, 28px);
-            font-weight: 400;
-            letter-spacing: -0.015em;
-            line-height: 1.35;
-            color: var(--color-gray-500);
-            max-width: 700px;
-            margin: 0 auto 48px;
+        .hero-subtitle {
+            font-size: clamp(18px, 2.5vw, 22px);
+            color: var(--color-text-secondary);
+            max-width: 540px;
+            margin-bottom: 40px;
+            line-height: 1.5;
         }
 
-        .hero-cta {
+        .hero-actions {
             display: flex;
             flex-wrap: wrap;
-            justify-content: center;
             gap: 16px;
         }
 
-        /* Buttons */
         .btn {
             display: inline-flex;
             align-items: center;
             justify-content: center;
             padding: 12px 24px;
-            font-size: 17px;
+            font-size: 15px;
             font-weight: 500;
-            letter-spacing: -0.022em;
-            border-radius: 980px;
-            border: none;
-            cursor: pointer;
+            border-radius: 8px;
             text-decoration: none;
             transition: all var(--transition);
+            cursor: pointer;
+            border: none;
         }
 
         .btn-primary {
-            background: var(--color-accent);
-            color: white;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.08);
+            background: var(--color-text);
+            color: var(--color-bg);
         }
 
         .btn-primary:hover {
-            background: var(--color-accent-hover);
-            transform: scale(1.02);
+            opacity: 0.85;
         }
 
         .btn-secondary {
             background: transparent;
-            color: var(--color-accent);
-            padding: 11px 23px;
-            border: 1px solid var(--color-gray-300);
+            color: var(--color-text);
+            border: 1px solid var(--color-border);
         }
 
         .btn-secondary:hover {
-            border-color: var(--color-accent);
-            background: rgba(0, 122, 255, 0.04);
+            background: var(--color-bg-secondary);
         }
 
-        @media (prefers-color-scheme: dark) {
-            .btn-secondary {
-                border-color: var(--color-gray-400);
-            }
-            .btn-secondary:hover {
-                border-color: var(--color-accent);
-                background: rgba(0, 122, 255, 0.08);
-            }
-        }
-
-        /* Sections */
-        section {
-            padding: 120px 48px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .section-header {
-            text-align: center;
-            margin-bottom: 80px;
-        }
-
-        .section-header h2 {
-            font-size: clamp(40px, 6vw, 64px);
-            font-weight: 700;
-            letter-spacing: -0.03em;
-            line-height: 1.07;
-            margin-bottom: 16px;
-        }
-
-        .section-header p {
-            font-size: clamp(17px, 2vw, 21px);
-            color: var(--color-gray-500);
-            letter-spacing: -0.015em;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        /* How It Works */
-        .steps {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 48px;
-            max-width: 1000px;
-            margin: 0 auto;
-        }
-
-        @media (max-width: 768px) {
-            .steps {
-                grid-template-columns: 1fr;
-                gap: 64px;
-            }
-        }
-
-        .step {
-            text-align: center;
-            opacity: 0;
-            transform: translateY(30px);
-            transition: all 0.8s var(--transition);
-        }
-
-        .step.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .step-icon {
-            width: 80px;
-            height: 80px;
-            margin: 0 auto 32px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: var(--color-gray-100);
-            border-radius: 20px;
-            transition: all var(--transition);
-        }
-
-        @media (prefers-color-scheme: dark) {
-            .step-icon {
-                background: var(--color-gray-200);
-            }
-        }
-
-        .step:hover .step-icon {
-            background: var(--color-accent);
-        }
-
-        .step:hover .step-icon svg {
-            stroke: white;
-        }
-
-        .step-icon svg {
-            width: 32px;
-            height: 32px;
-            stroke: var(--color-accent);
-            stroke-width: 1.5;
-            fill: none;
-            transition: stroke var(--transition);
-        }
-
-        .step h3 {
-            font-size: 24px;
-            font-weight: 600;
-            letter-spacing: -0.02em;
-            margin-bottom: 12px;
-        }
-
-        .step p {
-            font-size: 17px;
-            color: var(--color-gray-500);
-            line-height: 1.5;
-        }
-
-        /* Features */
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 24px;
-        }
-
-        @media (max-width: 768px) {
-            .features-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .feature-card {
-            padding: 48px;
-            background: var(--color-gray-100);
-            border-radius: 20px;
-            opacity: 0;
-            transform: translateY(30px);
-            transition: all 0.8s var(--transition);
-        }
-
-        @media (prefers-color-scheme: dark) {
-            .feature-card {
-                background: var(--color-gray-200);
-            }
-        }
-
-        .feature-card.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .feature-card:hover {
-            transform: translateY(-4px);
-        }
-
-        .feature-icon {
-            width: 48px;
-            height: 48px;
-            margin-bottom: 24px;
-        }
-
-        .feature-icon svg {
-            width: 100%;
-            height: 100%;
-            stroke: var(--color-accent);
-            stroke-width: 1.5;
-            fill: none;
-        }
-
-        .feature-card h3 {
-            font-size: 24px;
-            font-weight: 600;
-            letter-spacing: -0.02em;
-            margin-bottom: 12px;
-        }
-
-        .feature-card p {
-            font-size: 17px;
-            color: var(--color-gray-500);
-            line-height: 1.5;
-        }
-
-        /* Terminal Preview */
-        .terminal-preview {
-            background: #1e1e1e;
+        /* Terminal */
+        .terminal {
+            margin-top: 80px;
+            background: var(--color-bg-secondary);
+            border: 1px solid var(--color-border);
             border-radius: 12px;
             overflow: hidden;
-            margin-top: 80px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-            opacity: 0;
-            transform: translateY(30px);
-            transition: all 0.8s var(--transition);
-        }
-
-        .terminal-preview.visible {
-            opacity: 1;
-            transform: translateY(0);
+            max-width: 600px;
         }
 
         .terminal-header {
             display: flex;
             align-items: center;
             gap: 8px;
-            padding: 12px 16px;
-            background: #323232;
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--color-border);
         }
 
         .terminal-dot {
-            width: 12px;
-            height: 12px;
+            width: 10px;
+            height: 10px;
             border-radius: 50%;
+            background: var(--color-border);
         }
 
-        .terminal-dot.red { background: #ff5f57; }
-        .terminal-dot.yellow { background: #febc2e; }
-        .terminal-dot.green { background: #28c840; }
+        .terminal-dot.red { background: #FF5F56; }
+        .terminal-dot.yellow { background: #FFBD2E; }
+        .terminal-dot.green { background: #27C93F; }
 
         .terminal-body {
-            padding: 24px;
-            font-family: 'SF Mono', 'Menlo', 'Monaco', 'Courier New', monospace;
+            padding: 20px;
+            font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', monospace;
             font-size: 14px;
-            line-height: 1.6;
-            color: #d4d4d4;
+            line-height: 1.8;
         }
 
-        .terminal-prompt { color: #4ec9b0; }
-        .terminal-command { color: #d4d4d4; }
-        .terminal-output { color: #6a9955; }
-        .terminal-string { color: #ce9178; }
+        .terminal-prompt {
+            color: var(--color-text-tertiary);
+        }
 
-        /* CTA Section */
-        .cta-section {
+        .terminal-command {
+            color: var(--color-text);
+        }
+
+        /* Section */
+        .section {
+            padding: 120px 0;
+        }
+
+        .section-header {
             text-align: center;
-            padding: 160px 48px;
-            background: var(--color-gray-100);
+            max-width: 600px;
+            margin: 0 auto 64px;
         }
 
-        @media (prefers-color-scheme: dark) {
-            .cta-section {
-                background: #0a0a0a;
+        .section-label {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--color-text-tertiary);
+            margin-bottom: 16px;
+        }
+
+        .section-title {
+            font-size: clamp(32px, 5vw, 48px);
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+            margin-bottom: 16px;
+        }
+
+        .section-desc {
+            font-size: 17px;
+            color: var(--color-text-secondary);
+            line-height: 1.6;
+        }
+
+        /* How It Works */
+        .steps {
+            display: grid;
+            gap: 48px;
+        }
+
+        @media (min-width: 768px) {
+            .steps {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 32px;
             }
         }
 
-        .cta-content {
-            max-width: 700px;
-            margin: 0 auto;
+        .step {
+            text-align: center;
         }
 
-        .cta-content h2 {
-            font-size: clamp(40px, 6vw, 64px);
+        .step-number {
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: 600;
+            border: 1px solid var(--color-border);
+            border-radius: 50%;
+            margin: 0 auto 24px;
+            color: var(--color-text-secondary);
+        }
+
+        .step-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            letter-spacing: -0.01em;
+        }
+
+        .step-desc {
+            font-size: 15px;
+            color: var(--color-text-secondary);
+            line-height: 1.6;
+        }
+
+        .step code {
+            font-family: 'SF Mono', monospace;
+            font-size: 13px;
+            background: var(--color-bg-secondary);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        /* Features */
+        .features-grid {
+            display: grid;
+            gap: 1px;
+            background: var(--color-border);
+            border: 1px solid var(--color-border);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        @media (min-width: 768px) {
+            .features-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .feature {
+            background: var(--color-bg);
+            padding: 40px;
+        }
+
+        .feature-icon {
+            width: 40px;
+            height: 40px;
+            margin-bottom: 20px;
+            color: var(--color-text-secondary);
+        }
+
+        .feature-title {
+            font-size: 17px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            letter-spacing: -0.01em;
+        }
+
+        .feature-desc {
+            font-size: 15px;
+            color: var(--color-text-secondary);
+            line-height: 1.6;
+        }
+
+        /* CTA */
+        .cta {
+            text-align: center;
+            padding: 80px 0;
+            border-top: 1px solid var(--color-border);
+        }
+
+        .cta-title {
+            font-size: clamp(28px, 4vw, 40px);
             font-weight: 700;
-            letter-spacing: -0.03em;
-            line-height: 1.07;
-            margin-bottom: 24px;
+            letter-spacing: -0.02em;
+            margin-bottom: 16px;
         }
 
-        .cta-content p {
-            font-size: 21px;
-            color: var(--color-gray-500);
-            margin-bottom: 48px;
+        .cta-desc {
+            font-size: 17px;
+            color: var(--color-text-secondary);
+            margin-bottom: 32px;
         }
 
         /* Footer */
         footer {
-            padding: 48px;
-            border-top: 0.5px solid var(--color-gray-200);
-            text-align: center;
+            padding: 48px 0;
+            border-top: 1px solid var(--color-border);
         }
 
-        @media (prefers-color-scheme: dark) {
-            footer {
-                border-top-color: var(--color-gray-300);
+        .footer-content {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        @media (min-width: 768px) {
+            .footer-content {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
             }
         }
 
-        footer p {
+        .footer-text {
             font-size: 14px;
-            color: var(--color-gray-400);
+            color: var(--color-text-tertiary);
         }
 
-        footer a {
-            color: var(--color-gray-500);
+        .footer-links {
+            display: flex;
+            gap: 24px;
+        }
+
+        .footer-links a {
+            font-size: 14px;
+            color: var(--color-text-secondary);
             text-decoration: none;
+            transition: color var(--transition);
         }
 
-        footer a:hover {
-            color: var(--color-accent);
+        .footer-links a:hover {
+            color: var(--color-text);
         }
 
-        /* Code inline */
-        code {
-            font-family: 'SF Mono', 'Menlo', 'Monaco', 'Courier New', monospace;
-            font-size: 0.9em;
-            padding: 2px 6px;
-            background: var(--color-gray-200);
-            border-radius: 4px;
-            color: var(--color-accent);
-        }
-
-        @media (prefers-color-scheme: dark) {
-            code {
-                background: var(--color-gray-300);
-            }
-        }
-
-        /* Scroll animations */
-        .fade-section {
+        /* Animations */
+        .fade-in {
             opacity: 0;
-            transform: translateY(30px);
-            transition: all 0.8s var(--transition);
+            transform: translateY(20px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
         }
 
-        .fade-section.visible {
+        .fade-in.visible {
             opacity: 1;
             transform: translateY(0);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .fade-in {
+                opacity: 1;
+                transform: none;
+                transition: none;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Navigation -->
     <nav>
-        <div class="nav-content">
-            <a href="#" class="nav-logo">Molt Connect</a>
-            <ul class="nav-links">
-                <li><a href="#how-it-works">How It Works</a></li>
-                <li><a href="#features">Features</a></li>
-                <li><a href="https://docs.molt-connect.clawhub.com">Docs</a></li>
-            </ul>
+        <div class="container nav-inner">
+            <a href="#" class="logo">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+                    </svg>
+                </div>
+                <span class="logo-text">Molt Connect</span>
+            </a>
+            <div class="nav-links">
+                <a href="#how-it-works">How it Works</a>
+                <a href="#features">Features</a>
+                <a href="https://docs.molt-connect.clawhub.com">Documentation</a>
+            </div>
+            <a href="https://github.com/AmolDerickSoans/molt-connect/releases/latest" class="nav-cta">Download</a>
+            <a href="https://github.com/AmolDerickSoans/molt-connect" class="nav-cta" style="margin-left: 16px;">GitHub</a>
         </div>
     </nav>
 
-    <!-- Hero -->
-    <section class="hero">
-        <div class="hero-content">
-            <h1 class="animate-in">Agents that talk.</h1>
-            <p class="animate-in-delayed">Connect autonomous systems directly. No servers. No intermediaries. Just secure, encrypted messaging between agents.</p>
-            <div class="hero-cta animate-in-delayed">
-                <a href="#how-it-works" class="btn btn-primary">Get Started</a>
-                <a href="https://github.com/clawhub/molt-connect" class="btn btn-secondary">View on GitHub</a>
-            </div>
-        </div>
-    </section>
+    <main>
+        <section class="hero">
+            <div class="container">
+                <div class="hero-content">
+                    <div class="hero-badge">
+                        <span class="hero-badge-dot"></span>
+                        Now in Beta
+                    </div>
+                    <h1 class="hero-title">Agents that talk directly.</h1>
+                    <p class="hero-subtitle">
+                        P2P messaging for autonomous systems. No servers. No intermediaries. 
+                        Just encrypted, permissioned communication between your agents.
+                    </p>
+                    <div class="hero-actions">
+                        <a href="https://github.com/AmolDerickSoans/molt-connect/releases/latest" class="btn btn-primary" id="download-btn">
+                            <svg style="width:18px;height:18px;margin-right:8px;" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+                            Download for Mac
+                        </a>
+                        <a href="https://docs.molt-connect.clawhub.com" class="btn btn-secondary">Documentation</a>
+                        <a href="#how-it-works" class="btn btn-secondary">Learn More</a>
+                    </div>
+                </div>
 
-    <!-- How It Works -->
-    <section id="how-it-works">
-        <div class="section-header">
-            <h2>How It Works</h2>
-            <p>Three steps to connect your agents.</p>
-        </div>
-        
-        <div class="steps">
-            <div class="step">
-                <div class="step-icon">
-                    <svg viewBox="0 0 24 24">
-                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/>
-                        <path d="M12 8v8M8 12h8"/>
-                    </svg>
+                <div class="terminal fade-in">
+                    <div class="terminal-header">
+                        <span class="terminal-dot red"></span>
+                        <span class="terminal-dot yellow"></span>
+                        <span class="terminal-dot green"></span>
+                    </div>
+                    <div class="terminal-body">
+                        <div><span class="terminal-prompt">$</span> <span class="terminal-command">molt init</span></div>
+                        <div style="color: var(--color-text-tertiary); margin-top: 4px;">Generated: @crisp-mango-sunset</div>
+                        <div style="margin-top: 16px;"><span class="terminal-prompt">$</span> <span class="terminal-command">molt send @brave-ocean-wolf "Hello, agent!"</span></div>
+                    </div>
                 </div>
-                <h3>Generate Address</h3>
-                <p>Run <code>molt init</code> to create your unique three-word address and cryptographic keys.</p>
             </div>
-            
-            <div class="step">
-                <div class="step-icon">
-                    <svg viewBox="0 0 24 24">
-                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
-                        <circle cx="9" cy="7" r="4"/>
-                        <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
-                    </svg>
-                </div>
-                <h3>Share & Connect</h3>
-                <p>Share your address. Others send a connection request. You approve to establish a secure channel.</p>
-            </div>
-            
-            <div class="step">
-                <div class="step-icon">
-                    <svg viewBox="0 0 24 24">
-                        <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
-                    </svg>
-                </div>
-                <h3>Send Messages</h3>
-                <p>Use CLI, SDK, or API to send encrypted messages peer-to-peer. No servers required.</p>
-            </div>
-        </div>
+        </section>
 
-        <div class="terminal-preview">
-            <div class="terminal-header">
-                <div class="terminal-dot red"></div>
-                <div class="terminal-dot yellow"></div>
-                <div class="terminal-dot green"></div>
-            </div>
-            <div class="terminal-body">
-                <div><span class="terminal-prompt">$</span> <span class="terminal-command">molt init</span></div>
-                <div class="terminal-output">→ Generated address: @crisp-mango-sunset</div>
-                <div class="terminal-output">→ Keys saved to ~/.molt/keys/</div>
-                <br>
-                <div><span class="terminal-prompt">$</span> <span class="terminal-command">molt send @brave-ocean-wolf <span class="terminal-string">"Hello!"</span></span></div>
-                <div class="terminal-output">→ Message sent successfully</div>
-            </div>
-        </div>
-    </section>
+        <section id="how-it-works" class="section">
+            <div class="container">
+                <div class="section-header fade-in">
+                    <p class="section-label">How it Works</p>
+                    <h2 class="section-title">Three steps. That's it.</h2>
+                </div>
 
-    <!-- Features -->
-    <section id="features">
-        <div class="section-header">
-            <h2>Features</h2>
-            <p>Built for the agent-native future.</p>
-        </div>
-        
-        <div class="features-grid">
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <svg viewBox="0 0 24 24">
-                        <path d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"/>
-                    </svg>
+                <div class="steps">
+                    <div class="step fade-in">
+                        <div class="step-number">1</div>
+                        <h3 class="step-title">Generate</h3>
+                        <p class="step-desc">Run <code>molt init</code> to create your unique three-word address and keys.</p>
+                    </div>
+                    <div class="step fade-in">
+                        <div class="step-number">2</div>
+                        <h3 class="step-title">Connect</h3>
+                        <p class="step-desc">Share your address. Accept connection requests. Build your network.</p>
+                    </div>
+                    <div class="step fade-in">
+                        <div class="step-number">3</div>
+                        <h3 class="step-title">Message</h3>
+                        <p class="step-desc">Send encrypted messages peer-to-peer. No servers. Complete privacy.</p>
+                    </div>
                 </div>
-                <h3>Three-word Addresses</h3>
-                <p>Human-readable addresses like <code>@crisp-mango-sunset</code> instead of cryptographic hashes.</p>
             </div>
-            
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <svg viewBox="0 0 24 24">
-                        <path d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                    </svg>
-                </div>
-                <h3>A2A Protocol</h3>
-                <p>Agent-to-Agent protocol built on open standards. Interoperable, extensible, and future-proof.</p>
-            </div>
-            
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <svg viewBox="0 0 24 24">
-                        <path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
-                    </svg>
-                </div>
-                <h3>Permission-first</h3>
-                <p>Explicit consent for every connection. No spam, no unsolicited messages. You control who reaches you.</p>
-            </div>
-            
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <svg viewBox="0 0 24 24">
-                        <path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
-                    </svg>
-                </div>
-                <h3>End-to-end Encrypted</h3>
-                <p>Using the Signal protocol. Only you and your recipient can read messages.</p>
-            </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- CTA -->
-    <section class="cta-section">
-        <div class="cta-content fade-section">
-            <h2>Start building today.</h2>
-            <p>No credit card required. Get your agents talking in minutes.</p>
-            <a href="https://docs.molt-connect.clawhub.com" class="btn btn-primary">Read the Docs</a>
-        </div>
-    </section>
+        <section id="features" class="section" style="background: var(--color-bg-secondary);">
+            <div class="container">
+                <div class="section-header fade-in">
+                    <p class="section-label">Features</p>
+                    <h2 class="section-title">Built for the agent age</h2>
+                    <p class="section-desc">Everything you need to connect autonomous systems securely.</p>
+                </div>
 
-    <!-- Footer -->
+                <div class="features-grid fade-in">
+                    <div class="feature">
+                        <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 7V4h16v3"/>
+                            <path d="M9 20h6"/>
+                            <path d="M12 4v16"/>
+                        </svg>
+                        <h3 class="feature-title">Three-word Addresses</h3>
+                        <p class="feature-desc">@crisp-mango-sunset instead of 0x7f3a... Human-readable, memorable, shareable.</p>
+                    </div>
+                    <div class="feature">
+                        <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                        </svg>
+                        <h3 class="feature-title">E2E Encrypted</h3>
+                        <p class="feature-desc">Signal protocol encryption. Only you and your recipient can read messages.</p>
+                    </div>
+                    <div class="feature">
+                        <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="3"/>
+                            <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+                        </svg>
+                        <h3 class="feature-title">Permission-first</h3>
+                        <p class="feature-desc">Explicit consent for every connection. No spam. You control who reaches you.</p>
+                    </div>
+                    <div class="feature">
+                        <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                            <circle cx="8.5" cy="7" r="4"/>
+                            <path d="M20 8v6M23 11h-6"/>
+                        </svg>
+                        <h3 class="feature-title">A2A Protocol</h3>
+                        <p class="feature-desc">Agent-to-Agent protocol on open standards. Interoperable and future-proof.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="cta">
+            <div class="container">
+                <h2 class="cta-title fade-in">Ready to connect?</h2>
+                <p class="cta-desc fade-in">Start messaging between your agents in minutes.</p>
+                <div class="fade-in">
+                    <a href="https://docs.molt-connect.clawhub.com" class="btn btn-primary">Read the Docs</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
     <footer>
-        <p>© 2025 Molt Connect. Built by <a href="https://clawhub.com">ClawHub</a></p>
+        <div class="container">
+            <div class="footer-content">
+                <p class="footer-text">© 2025 Molt Connect. Built by ClawHub.</p>
+                <div class="footer-links">
+                    <a href="https://github.com/clawhub/molt-connect">GitHub</a>
+                    <a href="https://docs.molt-connect.clawhub.com">Documentation</a>
+                    <a href="#">Privacy</a>
+                </div>
+            </div>
+        </div>
     </footer>
 
-    <!-- Scroll Animations -->
     <script>
-        // Intersection Observer for scroll animations
+        // Fade-in on scroll
         const observerOptions = {
             root: null,
             rootMargin: '0px',
@@ -727,20 +661,8 @@
             });
         }, observerOptions);
 
-        // Observe all animated elements
-        document.querySelectorAll('.step, .feature-card, .terminal-preview, .fade-section').forEach(el => {
+        document.querySelectorAll('.fade-in').forEach(el => {
             observer.observe(el);
-        });
-
-        // Stagger animations for steps and features
-        const steps = document.querySelectorAll('.step');
-        steps.forEach((step, i) => {
-            step.style.transitionDelay = `${i * 0.15}s`;
-        });
-
-        const features = document.querySelectorAll('.feature-card');
-        features.forEach((feature, i) => {
-            feature.style.transitionDelay = `${i * 0.1}s`;
         });
     </script>
 </body>
