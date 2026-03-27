@@ -32,7 +32,7 @@ const TRANSITION_FRAMES = 12;
 
 export const MoltConnectVideo: React.FC = () => {
   return (
-    <AbsoluteFill style={{ backgroundColor: "#0a0a0a" }}>
+    <AbsoluteFill style={{ backgroundColor: "#1a1612" }}>
       <TransitionSeries>
         {/* Scene 1: Problem (0-5s) */}
         <TransitionSeries.Sequence durationInFrames={PROBLEM_FRAMES}>

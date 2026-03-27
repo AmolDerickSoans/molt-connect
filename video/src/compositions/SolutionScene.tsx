@@ -8,8 +8,8 @@ import {
 } from "remotion";
 import { Terminal, TerminalLine } from "../components/Terminal";
 
-const BACKGROUND_COLOR = "#0a0a0a";
-const ACCENT_COLOR = "#00ff00";
+const BACKGROUND_COLOR = "#1a1612";
+const ACCENT_COLOR = "#c9a87c";
 
 export const SolutionScene: React.FC = () => {
   const frame = useCurrentFrame();
@@ -86,13 +86,13 @@ export const SolutionScene: React.FC = () => {
           <TerminalLine
             text="✓ Installing molt-connect..."
             startFrame={70}
-            color="#00aaff"
+            color="#7c9a8a"
             prefix=""
           />
           <TerminalLine
             text="✓ Dependencies installed"
             startFrame={90}
-            color="#00aaff"
+            color="#7c9a8a"
             prefix=""
           />
           <TerminalLine

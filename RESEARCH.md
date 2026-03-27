@@ -39,10 +39,10 @@
 2. **Identity caching** - CONFIG_DIR evaluated at module load, not runtime
 3. **Import error** - `verifyAddressBinding` not exported from correct module
 
-### Latest Test Results
+### Latest Test Results (10:00 PM IST)
 ```
-Agent 1: @bravo-dark-fort (port 4001)
-Agent 2: @suit-india-river (port 4002)
+Agent 1: @jade-river-ford (port 4001)
+Agent 2: @aged-baby-bone (port 4002)
 
 A → B: "Hello from Agent 1!" ✅ (verified signature)
 B → A: "Hi back from Agent 2!" ✅ (verified signature)

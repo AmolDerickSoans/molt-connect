@@ -8,8 +8,8 @@ import {
   Easing,
 } from "remotion";
 
-const BACKGROUND_COLOR = "#0a0a0a";
-const ACCENT_COLOR = "#00ff00";
+const BACKGROUND_COLOR = "#1a1612";
+const ACCENT_COLOR = "#c9a87c";
 
 export const ProblemScene: React.FC = () => {
   const frame = useCurrentFrame();

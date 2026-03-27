@@ -8,8 +8,8 @@ import {
 } from "remotion";
 import { Terminal, TerminalLine } from "../components/Terminal";
 
-const BACKGROUND_COLOR = "#0a0a0a";
-const ACCENT_COLOR = "#00ff00";
+const BACKGROUND_COLOR = "#1a1612";
+const ACCENT_COLOR = "#c9a87c";
 
 export const AddressScene: React.FC = () => {
   const frame = useCurrentFrame();
@@ -77,7 +77,7 @@ export const AddressScene: React.FC = () => {
           <TerminalLine
             text="npx molt whoami"
             startFrame={35}
-            color="#00ff00"
+            color="#c9a87c"
           />
           <TerminalLine
             text=""

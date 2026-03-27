@@ -7,9 +7,11 @@ import {
   interpolate,
 } from "remotion";
 
-const BACKGROUND_COLOR = "#0a0a0a";
-const ACCENT_GREEN = "#00ff00";
-const ACCENT_CYAN = "#00aaff";
+const BACKGROUND_COLOR = "#1a1612"; // Warm dark charcoal
+const ACCENT_GOLD = "#c9a87c"; // Warm gold for Agent A
+const ACCENT_SAGE = "#7c9a8a"; // Sage green for Agent B
+const TEXT_PRIMARY = "#f5f0eb"; // Warm cream
+const HIGHLIGHT = "#d4a574"; // Terracotta
 
 // Split-screen terminal component
 type SplitTerminalProps = {
@@ -54,7 +56,7 @@ const SplitTerminal: React.FC<SplitTerminalProps> = ({
         overflow: "hidden",
         transform: `scale(${scale})`,
         opacity,
-        boxShadow: `0 0 40px rgba(${accentColor === ACCENT_GREEN ? "0, 255, 0" : "0, 170, 255"}, 0.2)`,
+        boxShadow: `0 0 40px rgba(${accentColor === ACCENT_GOLD ? "0, 255, 0" : "0, 170, 255"}, 0.2)`,
         fontFamily: "monospace",
       }}
     >
@@ -149,7 +151,7 @@ const TerminalLine: React.FC<TerminalLineProps> = ({
   prefix = "$ ",
   text,
   startFrame,
-  color = ACCENT_GREEN,
+  color = ACCENT_GOLD,
   typewriter = true,
 }) => {
   const frame = useCurrentFrame();
@@ -204,11 +206,11 @@ const MessageSendAnimation: React.FC<MessageSendProps> = ({ fromSide, startFrame
         top: 480,
         width: 120,
         padding: "8px 16px",
-        backgroundColor: fromSide === "left" ? ACCENT_GREEN : ACCENT_CYAN,
+        backgroundColor: fromSide === "left" ? ACCENT_GOLD : ACCENT_SAGE,
         borderRadius: 20,
         opacity,
         transform: `scale(${scale})`,
-        boxShadow: `0 0 30px ${fromSide === "left" ? ACCENT_GREEN : ACCENT_CYAN}`,
+        boxShadow: `0 0 30px ${fromSide === "left" ? ACCENT_GOLD : ACCENT_SAGE}`,
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
@@ -226,6 +228,27 @@ const MessageSendAnimation: React.FC<MessageSendProps> = ({ fromSide, startFrame
 export const DemoScene: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
+
+  // Zoom effect - zooms in during typing, out during message travel
+  // Typing periods: 30-70, 150-190, 220-280
+  // Travel periods: 60-90, 180-210
+  const getZoomScale = () => {
+    // Zoom in for typing Agent A (frames 30-70)
+    if (frame >= 30 && frame < 70) {
+      return interpolate(frame, [30, 50, 70], [1, 1.08, 1], { extrapolateRight: "clamp" });
+    }
+    // Zoom in for typing Agent B (frames 150-190)
+    if (frame >= 150 && frame < 190) {
+      return interpolate(frame, [150, 170, 190], [1, 1.08, 1], { extrapolateRight: "clamp" });
+    }
+    // Zoom in for typing Agent A reply (frames 220-280)
+    if (frame >= 220 && frame < 280) {
+      return interpolate(frame, [220, 250, 280], [1, 1.1, 1], { extrapolateRight: "clamp" });
+    }
+    return 1;
+  };
+
+  const zoomScale = getZoomScale();
 
   // Title animation
   const titleSpring = spring({
@@ -260,6 +283,8 @@ export const DemoScene: React.FC = () => {
         backgroundColor: BACKGROUND_COLOR,
         padding: 40,
         flexDirection: "column",
+        transform: `scale(${zoomScale})`,
+        transformOrigin: "center center",
       }}
     >
       {/* Title */}
@@ -298,14 +323,14 @@ export const DemoScene: React.FC = () => {
         <SplitTerminal
           side="left"
           address="@dear-body-onyx"
-          accentColor={ACCENT_GREEN}
+          accentColor={ACCENT_GOLD}
           label="Agent A"
           startFrame={15}
         >
           <TerminalLine
             text={'$ molt send @love-blaze-bronze "Hello!"'}
             startFrame={30}
-            color={ACCENT_GREEN}
+            color={ACCENT_GOLD}
           />
           <TerminalLine
             text="→ Sending message..."
@@ -327,7 +352,7 @@ export const DemoScene: React.FC = () => {
           <TerminalLine
             text="📨 Received from @love-blaze-bronze:"
             startFrame={185}
-            color={ACCENT_CYAN}
+            color={ACCENT_SAGE}
             prefix=""
           />
           <TerminalLine
@@ -344,7 +369,7 @@ export const DemoScene: React.FC = () => {
           <TerminalLine
             text={'$ molt send @love-blaze-bronze "Working on something cool!"'}
             startFrame={220}
-            color={ACCENT_GREEN}
+            color={ACCENT_GOLD}
           />
           <TerminalLine
             text="→ Sending message..."
@@ -371,7 +396,7 @@ export const DemoScene: React.FC = () => {
             style={{
               width: 100,
               height: 4,
-              background: `linear-gradient(90deg, ${ACCENT_GREEN}, ${ACCENT_CYAN})`,
+              background: `linear-gradient(90deg, ${ACCENT_GOLD}, ${ACCENT_SAGE})`,
               borderRadius: 2,
               boxShadow: `0 0 20px rgba(0, 255, 0, ${pulseGlow})`,
             }}
@@ -385,7 +410,7 @@ export const DemoScene: React.FC = () => {
               boxShadow: `0 0 20px rgba(0, 255, 0, ${pulseGlow * 0.5})`,
             }}
           >
-            <span style={{ color: ACCENT_GREEN, fontSize: 12, fontWeight: "600" }}>
+            <span style={{ color: ACCENT_GOLD, fontSize: 12, fontWeight: "600" }}>
               🔗 ENCRYPTED P2P
             </span>
           </div>
@@ -395,7 +420,7 @@ export const DemoScene: React.FC = () => {
         <SplitTerminal
           side="right"
           address="@love-blaze-bronze"
-          accentColor={ACCENT_CYAN}
+          accentColor={ACCENT_SAGE}
           label="Agent B"
           startFrame={15}
         >
@@ -413,7 +438,7 @@ export const DemoScene: React.FC = () => {
           <TerminalLine
             text="📨 Received from @dear-body-onyx:"
             startFrame={95}
-            color={ACCENT_GREEN}
+            color={ACCENT_GOLD}
             prefix=""
           />
           <TerminalLine
@@ -430,7 +455,7 @@ export const DemoScene: React.FC = () => {
           <TerminalLine
             text={'$ molt send @dear-body-onyx "Hey! What\'s up?"'}
             startFrame={130}
-            color={ACCENT_CYAN}
+            color={ACCENT_SAGE}
           />
           <TerminalLine
             text="→ Sending message..."
@@ -464,11 +489,11 @@ export const DemoScene: React.FC = () => {
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <div style={{ width: 10, height: 10, borderRadius: "50%", backgroundColor: ACCENT_GREEN }} />
+          <div style={{ width: 10, height: 10, borderRadius: "50%", backgroundColor: ACCENT_GOLD }} />
           <span style={{ color: "#888", fontSize: 14 }}>Agent A: @dear-body-onyx</span>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <div style={{ width: 10, height: 10, borderRadius: "50%", backgroundColor: ACCENT_CYAN }} />
+          <div style={{ width: 10, height: 10, borderRadius: "50%", backgroundColor: ACCENT_SAGE }} />
           <span style={{ color: "#888", fontSize: 14 }}>Agent B: @love-blaze-bronze</span>
         </div>
       </div>

@@ -2,7 +2,7 @@
 
 ## ✅ Working
 
-**Test Results (Updated 4:03 PM IST):**
+**Test Results (Updated 10:00 PM IST):**
 - Two agents can communicate bidirectionally ✅
 - **Different identities** now generated correctly ✅
 - Correct sender addresses displayed ✅
@@ -12,8 +12,8 @@
 - **Skill commands exported** ✅
 
 ```
-Agent A: @bravo-dark-fort (port 4001)
-Agent B: @suit-india-river (port 4002)
+Agent A: @jade-river-ford (port 4001)
+Agent B: @aged-baby-bone (port 4002)
 
 A → B: "Hello from Agent 1!" ✅ (verified signature)
 B → A: "Hi back from Agent 2!" ✅ (verified signature)
