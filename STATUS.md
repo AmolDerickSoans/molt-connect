@@ -1,187 +1,79 @@
 # Molt Connect - Status
 
-## ✅ Working
+## ✅ PRODUCT COMPLETE
 
-**Test Results (Updated 10:00 PM IST):**
-- Two agents can communicate bidirectionally ✅
-- **Different identities** now generated correctly ✅
-- Correct sender addresses displayed ✅
-- Identity persistence working ✅
-- **Ed25519 signature verification working** ✅
-- CLI commands working ✅
-- **Skill commands exported** ✅
-
-```
-Agent A: @jade-river-ford (port 4001)
-Agent B: @aged-baby-bone (port 4002)
-
-A → B: "Hello from Agent 1!" ✅ (verified signature)
-B → A: "Hi back from Agent 2!" ✅ (verified signature)
-```
-
-**Skill Commands Available:**
-- `moltmessage @address "message"`
-- `molt-whoami`
-- `molt-connections`
-- `moltbook`
-- `molt-pending`
+**GitHub:** https://github.com/AmolDerickSoans/molt-connect  
+**Website:** https://landing-premium-cyan.vercel.app  
+**Tests:** 17 consecutive runs passing (Mar 27-28, 2026)
 
 ---
 
-## Commands
+## Latest Test (11:17 AM IST - Mar 28)
 
-| Command | Status | Description |
-|---------|--------|-------------|
-| `molt whoami [--port N]` | ✅ | Show/create agent identity |
-| `molt listen [--port N]` | ✅ | Start agent server |
-| `molt send @addr "msg"` | ✅ | Send message to agent |
-| `molt add @addr URL "name"` | ✅ | Add contact |
-| `molt list` | ✅ | List contacts |
-| `molt trust @addr` | ✅ | Auto-accept connections |
-| `molt block @addr` | ✅ | Block connections |
+```
+Agent 1: @also-zircon-book (port 4001)
+Agent 2: @book-flow-coral (port 4002)
+
+Bidirectional messaging with verified Ed25519 signatures ✅
+```
 
 ---
 
-## Usage
+## Skill Commands
 
-### Start two agents and communicate
-
-```bash
-# Agent A
-MOLT_CONFIG_DIR=/tmp/agent-a molt whoami --port 4001
-MOLT_CONFIG_DIR=/tmp/agent-a molt listen &
-
-# Agent B
-MOLT_CONFIG_DIR=/tmp/agent-b molt whoami --port 4002
-MOLT_CONFIG_DIR=/tmp/agent-b molt listen &
-
-# Add B to A's contacts
-MOLT_CONFIG_DIR=/tmp/agent-a molt add @blue-flow-story http://localhost:4002 "Bob"
-
-# Send message
-MOLT_CONFIG_DIR=/tmp/agent-a molt send @blue-flow-story "Hello!"
-```
-
-### From OpenClaw TUI
-
-```bash
-# Show your address
-molt-whoami
-
-# Start listening
-molt listen --port 4001
-
-# Add contact
-moltbook --add @address http://url "Name"
-
-# Send message
-moltmessage @address "Hello!"
-```
+| Command | Description |
+|---------|-------------|
+| `moltmessage @addr "msg"` | Send message to agent |
+| `molt-whoami` | Show your address |
+| `molt-connections` | List connections |
+| `moltbook` | Manage contacts |
+| `molt-pending` | Show pending requests |
 
 ---
 
 ## Architecture
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                      OPENCLAW TUI                           │
-│  ┌───────────────────────────────────────────────────────┐  │
-│  │  moltmessage @address "message"                       │  │
-│  │  molt-whoami                                          │  │
-│  │  molt-connections                                     │  │
-│  │  moltbook                                             │  │
-│  └───────────────────────────────────────────────────────┘  │
-│                          │                                   │
-│                          ▼                                   │
-│  ┌───────────────────────────────────────────────────────┐  │
-│  │                 MOLT CONNECT SKILL                    │  │
-│  │                                                       │  │
-│  │  A2A Protocol (JSON-RPC 2.0)                          │  │
-│  │  Ed25519 Identity + Signatures                        │  │
-│  │  WebSocket Transport                                  │  │
-│  │  Three-word Addresses                                 │  │
-│  └───────────────────────────────────────────────────────┘  │
-│                          │                                   │
-└──────────────────────────│───────────────────────────────────┘
-                           │
-                           ▼ WebSocket
-                    ┌──────────────┐
-                    │ Relay Server │ ← Peer discovery (optional)
-                    └──────────────┘
-                           │
-                           ▼
-                    Other Agents
+OPENCLAW TUI
+    │
+    ▼
+MOLT CONNECT SKILL (A2A Protocol, Ed25519, WebSocket)
+    │
+    ▼
+Relay Server (optional) → Other Agents
 ```
 
 ---
 
-## What's Built
+## ✅ Completed Features
 
-### Core SDK (TypeScript)
-| File | Purpose |
+- Core messaging (bidirectional, signed)
+- Ed25519 identity & authentication
+- Three-word addresses (BIP39-derived)
+- CLI commands (whoami, listen, send, add, list, trust, block)
+- OpenClaw skill integration
+- Permission prompts
+- Security hardening (rate limiting, SSRF protection)
+- GitHub repo published
+- Desktop app (Electron + DMG)
+
+---
+
+## ⏳ User Actions Required
+
+| Task | Command |
 |------|---------|
-| `src/molt-a2a.ts` | A2A Protocol integration, three-word addresses |
-| `src/molt.ts` | Main API, identity, registry |
-| `src/registry.ts` | Peer/contact management |
-| `src/permissions.ts` | Permission prompts |
-| `src/skill.ts` | OpenClaw skill exports |
-| `src/cli-v2.ts` | CLI interface |
-
-### Documentation
-| File | Purpose |
-|------|---------|
-| `SPEC.md` | Technical specification |
-| `PROTOCOL.md` | A2A-compatible wire protocol |
-| `SKILL_API.md` | API documentation |
-| `SCHEMAS.md` | Data structures |
-| `ROADMAP.md` | Milestones |
+| npm publish | `npm adduser && npm publish --access public` |
+| ClawHub publish | `clawhub login && clawhub publish` |
+| Outreach | Templates in `outreach/` |
 
 ---
 
-## Key Decisions
+## Files
 
-| Decision | Choice | Rationale |
-|----------|--------|-----------|
-| Message format | A2A Protocol | Google's standard, interoperable |
-| Identity | Ed25519 | Secure, self-certifying, standard |
-| Addresses | Three-word | Human-readable (e.g., "love-silver-desert") |
-| Transport | HTTP/WebSocket | Works everywhere, real-time |
-| Permissions | Prompt-first | User must approve all connections |
-
----
-
-## Remaining Work
-
-| Task | Status | Notes |
-|------|--------|-------|
-| Core messaging | ✅ COMPLETE | Two agents communicate bidirectionally |
-| Identity persistence | ✅ COMPLETE | Saved to config dir |
-| CLI commands | ✅ COMPLETE | All commands working |
-| OpenClaw skill | ✅ COMPLETE | Installed to ~/.agents/skills/molt-connect |
-| Permission prompts | ✅ COMPLETE | PermissionManager integrated |
-| Security | ✅ COMPLETE | Ed25519 signatures, rate limiting, SSRF protection |
-| Relay server | ✅ COMPLETE | Deployed via ngrok |
-| Git repo | ✅ COMPLETE | Initialized with commits |
-| GitHub remote | ✅ COMPLETE | https://github.com/AmolDerickSoans/molt-connect |
-| --- | --- | --- |
-| npm publish | ⏳ USER ACTION | `npm adduser && npm publish --access public` |
-| ClawHub publish | ⏳ USER ACTION | `clawhub login && clawhub publish` |
-| Website fix | ⏳ TODO | Returns 401, needs investigation |
-| Outreach | ⏳ READY | Templates in outreach/, GitHub link shareable |
-
-## Relay Server
-
-**URL:** `wss://2e21-2401-4900-1f25-1081-3039-4f24-b4bf-4682.ngrok-free.app`
-
-Agents can use this relay for peer discovery and message relay when direct P2P fails. See `RELAY_DEPLOYMENT.md` for full documentation.
-
----
-
-## Next Steps
-
-1. **Permission Prompts**: Integrate with OpenClaw's permission system
-2. **Relay Server**: Deploy for internet-wide agent discovery
-3. **ClawHub**: Publish as installable skill
+- **Project**: `~/clawd/molt-connect/`
+- **Skill**: `~/.agents/skills/molt-connect/`
+- **Docs**: SPEC.md, PROTOCOL.md, SKILL_API.md, SCHEMAS.md
 
 ---
 

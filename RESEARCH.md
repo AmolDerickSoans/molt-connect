@@ -39,14 +39,40 @@
 2. **Identity caching** - CONFIG_DIR evaluated at module load, not runtime
 3. **Import error** - `verifyAddressBinding` not exported from correct module
 
-### Latest Test Results (10:00 PM IST)
+### Latest Test Results (11:17 AM IST - Mar 28)
 ```
-Agent 1: @jade-river-ford (port 4001)
-Agent 2: @aged-baby-bone (port 4002)
+Agent 1: @also-zircon-book (port 4001)
+Agent 2: @book-flow-coral (port 4002)
 
 A → B: "Hello from Agent 1!" ✅ (verified signature)
 B → A: "Hi back from Agent 2!" ✅ (verified signature)
 ```
+
+**Total: 17 consecutive test runs passing** (Mar 27-28, 2026)
+
+---
+
+## Test History (All Passing)
+
+| Time | Agent 1 | Agent 2 | Status |
+|------|---------|---------|--------|
+| 12:55 PM Mar 27 | @bomb-krypton-yellow | @ivory-lima-sierra | ✅ |
+| 2:02 PM | @alpha-most-joy | @papa-acid-more | ✅ |
+| 3:03 PM | @mail-bone-lima | @dark-lotus-amber | ✅ |
+| 4:03 PM | @bravo-dark-fort | @suit-india-river | ✅ |
+| 5:05 PM | @ocean-name-such | @india-aged-main | ✅ |
+| 6:07 PM | @lotus-much-river | @forest-india-hotel | ✅ |
+| 7:16 PM | @step-five-frost | @krystal-mail-debt | ✅ |
+| 10:00 PM | @jade-river-ford | @aged-baby-bone | ✅ |
+| 11:23 PM | @foot-kilo-army | @boom-peace-stop | ✅ |
+| 12:24 AM Mar 28 | @bath-love-deal | @jungle-beat-krypton | ✅ |
+| 1:25 AM | @boom-more-bank | @india-baby-zircon | ✅ |
+| 4:39 AM | @valley-blaze-sure | @amber-much-both | ✅ |
+| 6:01 AM | @wind-data-foxtrot | @such-onyx-oscar | ✅ |
+| 7:42 AM | @dear-romeo-umber | @jungle-dune-glimmer | ✅ |
+| 8:58 AM | @umber-topaz-foxtrot | @magenta-male-onyx | ✅ |
+| 10:10 AM | @xray-romeo-bath | @take-joy-hemlock | ✅ |
+| 11:17 AM | @also-zircon-book | @book-flow-coral | ✅ |
 
 ---
 
