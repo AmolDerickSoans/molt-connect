@@ -39,16 +39,16 @@
 2. **Identity caching** - CONFIG_DIR evaluated at module load, not runtime
 3. **Import error** - `verifyAddressBinding` not exported from correct module
 
-### Latest Test Results (9:38 PM IST - Mar 28)
+### Latest Test Results (1:26 AM IST - Mar 29)
 ```
-Agent 1: @must-hemlock-days (port 4001)
-Agent 2: @such-ford-deal (port 4002)
+Agent 1: @suit-bear-dune (port 4001)
+Agent 2: @bone-made-take (port 4002)
 
 A → B: "Hello from Agent 1!" ✅ (verified signature)
 B → A: "Hi back from Agent 2!" ✅ (verified signature)
 ```
 
-**Total: 24 consecutive test runs passing** (Mar 27-28, 2026)
+**Total: 27 consecutive test runs passing** (Mar 27-28, 2026)
 
 ---
 
@@ -80,6 +80,9 @@ B → A: "Hi back from Agent 2!" ✅ (verified signature)
 | 7:35 PM | @river-mars-sure | @hotel-star-charlie | ✅ |
 | 8:35 PM | @victor-book-boat | @ocean-fable-mike | ✅ |
 | 9:38 PM | @must-hemlock-days | @such-ford-deal | ✅ |
+| 10:45 PM | @bone-most-fire | @area-dark-blue | ✅ |
+| 11:58 PM | @azure-book-lotus | @sapphire-quebec-debt | ✅ |
+| 1:26 AM Mar 29 | @suit-bear-dune | @bone-made-take | ✅ |
 
 ---
 
